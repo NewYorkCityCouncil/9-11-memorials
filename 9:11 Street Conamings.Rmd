@@ -1,0 +1,258 @@
+---
+title: "9/11 Street Conamings"
+author: "Lukas Lopez-Jensen"
+date: "2026-07-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(sf)
+library(httr)
+library(jsonlite)
+library(leaflet)
+library(htmltools)
+```
+
+# Acquire complete data from the arcgis map
+```{r}
+intersection_url <- 
+  "https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/survey123_84951e642e3a49998a9cfba407142ac5_results/FeatureServer/0/query"
+
+street_url <- 
+  "https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/survey123_da9c3d28841f484e8cd88f960513d183_results/FeatureServer/0/query"
+
+download_arcgis <- function(url, geometry_type = c("street", "intersection"), batch_size = 1000) {
+  geometry_type <- match.arg(geometry_type)
+  offset <- 0
+  features <- list()
+
+  repeat {
+    r <- GET(url, query = list(
+        where = "1=1", outFields = "*", returnGeometry = TRUE,
+        orderByFields = "objectid ASC", resultOffset = offset,
+        resultRecordCount = batch_size,f = "json"
+      ))
+    x <- fromJSON(content(r, "text"), simplifyDataFrame = FALSE)
+    n <- length(x$features)
+    cat("Offset:", offset, " Returned:", n, "\n")
+
+    if (n == 0)
+      break
+
+    features <- c(features, x$features)
+    offset <- offset + n
+  }
+
+  cat("Total features downloaded:", length(features), "\n")
+
+  # Attributes
+  attributes <- map_dfr(features,
+    ~{
+      attrs <- .x$attributes
+      attrs[map_lgl(attrs, is.null)] <- NA
+      as_tibble(attrs)
+    }
+  )
+
+  # Geometry
+  if (geometry_type == "intersection") {
+    geometry <- st_sfc(map(features, ~st_point(c(.x$geometry$x, .x$geometry$y))), crs = 4326)
+    
+  } else if (geometry_type == "street") {
+    geometry <- st_sfc(map(
+      features, function(f) {
+      paths <- f$geometry$paths
+      # Convert each path in the array into a coordinate matrix
+      lines <- lapply(seq_len(dim(paths)[1]), function(i) {
+        paths[i, , ]}
+      )
+
+      if (length(lines) == 1) {
+        st_linestring(lines[[1]])
+      } else {
+        st_multilinestring(lines)
+      }}),
+    crs = 4326)
+  }
+
+  st_as_sf(bind_cols(attributes, geometry = geometry))
+}
+
+intersection_sf <- download_arcgis(intersection_url, geometry_type = "intersection")
+street_sf <- download_arcgis(street_url, geometry_type = "street")
+
+intersection_sf <- intersection_sf |> mutate(feature_type = "Intersection")
+street_sf <- street_sf |> mutate(feature_type = "Street")
+
+honorary_sf <- bind_rows(intersection_sf, street_sf)
+```
+
+# Clean and filter
+```{r}
+# Reformat dates & remove extra spaces
+honorary_sf <- honorary_sf %>%
+  mutate(
+    creation_dt = as.POSIXct(CreationDate / 1000, origin = '1970-01-01', tz = 'UTC'),
+    edit_dt = as.POSIXct(EditDate / 1000, origin = '1970-01-01', tz = 'UTC'),
+    enactment_dt = as.POSIXct(enactment_date / 1000, origin = '1970-01-01', tz = 'UTC'),
+    # Date only
+    enactment_date = as.Date(enactment_dt),
+    # Calendar year
+    enactment_year = as.integer(format(enactment_date, '%Y'))
+  ) %>%
+  mutate(new_name = str_squish(new_name))
+
+# Filter to post-9/11, drop duplicates in relevant columns
+hits <- honorary_sf %>% filter(enactment_date >= as.Date("2001/09/11"))  %>%
+  select(new_name, biographical_information, limits, borough, zip_code, enactment_year, present_name, category, introduced_by_council_members, geometry) %>%
+  unique()
+
+# Search for 9/11 keywords in bio
+date <- hits %>%
+  filter(str_detect(
+    str_to_lower(biographical_information),
+    '9/11|9-11|9.11|september 11'
+  ))
+
+keywords <- regex("world trade center|wtc|twin towers|ground zero", ignore_case = TRUE)
+exclude <- regex("9/11|september 11|9-11|9.11", ignore_case = TRUE)
+other_hits <- honorary_sf %>% filter(str_detect(biographical_information, keywords), !str_detect(biographical_information, exclude)) %>%
+    select(new_name, biographical_information, limits, borough, zip_code, enactment_year, present_name, category, introduced_by_council_members, geometry) %>%
+  unique()
+
+final <- rbind(date, other_hits)
+
+# Remove those with insufficient involvement
+blacklist <- c("Anthony Varvaro Way", "Cono D’ Alto Way", "Lawrence “Larry” Morrish Way", "Jim McQuade Way", 
+"Lucy and Lenny Cecere Way", "Don Lee Way", "Don B Lee Way", "Augie Ayala Jr. Way", "Kevin J. Walsh Way",
+"Lance Cpl. Michael D. Glover USMC Way", "Firefighter Thomas C. Brick Way", "Thomas C. Brick Way",
+"Monsignor James J. Dorney Way", "Detective Miosotis Familia Way", "Dan Doctoroff Way", 
+"Deacon John A. Singler, II Street", "Reverend Dr. James C. Kelly Sr. Way", "Annie Beveridge Way",
+"Max Bond Way", "Marc A. Haken Way", "Rab Wilkinson Way", "Bishop Landon E. Penn Way", 
+"Marine Lance Corporal William Wayne White Street", "Brother Ralph Clifford Way", "Lori Allison Singer Avenue",
+"Jodie Lane Place", "Private 2nd Class Brian Grant Street “Operation Iraqi Freedom”", "African Square",
+"Stan Brooks Way", "Honorable Louis R. Jerome Way", "Franklin J. Havlicek Place", "Mary V. Lauro Way", 
+"Stephen “Snapper” Knapp", "Bobby Bello Field", "Sgt. Mario Nelson Haitian Warrior", "John M. D’Amato Way", "Pfc. Hernando Rios Place", "Irwin B. Cohen Way", 'Andy "The Barber" Foxe Way', "Melvin “Mel” Doby Memorial Way", "Dennis M. Hogan Way", "Citizens of Mola di Bari Way", "Detective Raymond Abear Way")
+
+final <- final %>% filter(!new_name %in% blacklist)
+```
+
+# Create New Map
+```{r}
+# Columns to include in popup
+popup_cols <- setdiff(names(final), attr(final, "sf_column"))
+
+# Pretty variable names
+pretty_name <- function(x) {x |> str_replace_all("_", " ") |> str_to_title()}
+
+# Build popup HTML
+popup_html <- map_chr(seq_len(nrow(final)), function(i) {
+  vals <- final[i, popup_cols] |> st_drop_geometry()
+  vals_list <- vals[1, ] |> as.list()
+  
+  # Popup title
+  title <- htmlEscape(vals_list$new_name)
+
+  # Remove fields that will be displayed separately
+  body_fields <- vals_list[!names(vals_list) %in% c("new_name", "biographical_information")]
+
+  # Metadata fields
+  rows <- map2_chr(
+    pretty_name(names(body_fields)),
+    body_fields,
+    ~sprintf(
+      "<div style='
+          font-size:12px;
+          line-height:1.35;
+          margin-bottom:3px;'>
+         
+         <span style='font-weight:bold;'>%s:</span> %s
+
+       </div>",
+      htmlEscape(.x),
+      htmlEscape(ifelse(is.null(.y) || is.na(.y), "", as.character(.y)))))
+
+  # Biography section
+  bio <- vals_list$biographical_information
+
+  if (is.null(bio) || is.na(bio)) {
+    bio_section <- ""
+  } else {
+    bio_section <- sprintf(
+      "<hr style='margin:8px 0 5px 0;'>
+
+       <div style='
+           font-weight:bold;
+           font-size:12px;
+           margin-bottom:4px;'>
+         Biographical Information
+       </div>
+
+       <div style='
+           max-height:140px;
+           overflow-y:auto;
+           overflow-x:hidden;
+           white-space:normal;
+           font-size:12px;
+           line-height:1.35;
+           padding-right:4px;'>
+         %s
+       </div>",
+      htmlEscape(bio))}
+
+  paste0(
+    "<div style='
+        max-width:320px;
+        max-height:300px;
+        overflow-y:auto;
+        overflow-x:hidden;
+        padding-right:4px;'>",
+
+      # Sticky title
+      "<div style='
+          position:sticky;
+          top:0;
+          background:white;
+          z-index:100;
+          padding-bottom:5px;
+          margin-bottom:6px;
+          border-bottom:1px solid #ddd;
+          font-size:15px;
+          font-weight:bold;'>",
+        title,
+      "</div>",
+      paste(rows, collapse = ""),
+      bio_section,
+    "</div>"
+  )
+})
+
+# Geometry indices
+line_idx <- which(st_geometry_type(final) == "LINESTRING")
+point_idx <- which(st_geometry_type(final) == "POINT")
+
+map <- leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolylines(
+    data = final[line_idx, ],
+    popup = popup_html[line_idx],
+    popupOptions = popupOptions(maxWidth = 340, minWidth = 220),
+    weight = 4
+  ) %>%
+  addCircleMarkers(
+    data = final[point_idx, ],
+    popup = popup_html[point_idx],
+    popupOptions = popupOptions(maxWidth = 340, minWidth = 220),
+    radius = 5,
+    stroke = FALSE,
+    fillOpacity = 0.9
+  )
+
+htmlwidgets::saveWidget(
+  map,
+  "nyc_911_conamings.html",
+  selfcontained = TRUE
+)
+```
+

@@ -1,0 +1,11 @@
+.venv/
+.cache/
+__pycache__/
+*.pyc
+geoclient_key.txt
+
+# Claude Code
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.claude.json

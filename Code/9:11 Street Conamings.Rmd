@@ -117,7 +117,15 @@ date <- hits %>%
 
 keywords <- regex("world trade center|wtc|twin towers|ground zero", ignore_case = TRUE)
 exclude <- regex("9/11|september 11|9-11|9.11", ignore_case = TRUE)
-other_hits <- honorary_sf %>% filter(str_detect(biographical_information, keywords), !str_detect(biographical_information, exclude)) %>%
+other_hits <- honorary_sf %>% filter(
+  (str_detect(biographical_information, keywords) & !str_detect(biographical_information, exclude)) |
+  new_name %in% c("Carl Allen Peralta Street", "Captain Vincent F. Giammona Way", "Craig W. Staub Way", "Lt. Dennis Mojica Corner",
+                  "Frances Horos Street", "John Patrick Burnside Way", "Josh Rosenthal Way", "Lorraine Lee Way", 
+                  "Lt. Joseph Agnello Ladder 118, FDNY Street", "Lucia Crifasi Street", "Mark and Stephen Colaio Way", 
+                  "Martin J. Egan, Jr. Corner", "Michael A. Marti Street", "Michael Stabile Way", "Patricia A. Kuras 9/11 Memorial Way",
+                  "Peter Raimondi Way", "Richard Allen Pearlman Lane", "Rosemary Ann Smith Place", "Firefighter Timothy M. Welty Street",
+                  "Firefighter Thomas R. Kelly Avenue", "Christopher Racaniello 9/11 Memorial Way", "Vincent Laieta Jr., Way")
+  ) %>%
     select(new_name, biographical_information, limits, borough, zip_code, enactment_year, present_name, category, introduced_by_council_members, geometry) %>%
   unique()
 
@@ -251,8 +259,13 @@ map <- leaflet() %>%
 
 htmlwidgets::saveWidget(
   map,
-  "nyc_911_conamings.html",
+  "index.html",
   selfcontained = TRUE
 )
+```
+
+# Add scraped data
+```{r}
+scraped <- read_csv("data/nyc_memorials_manual_geocoded.csv")
 ```
 

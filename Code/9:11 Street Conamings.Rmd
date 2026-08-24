@@ -11,16 +11,16 @@ library(sf)
 library(httr)
 library(jsonlite)
 library(leaflet)
+library(leaflet.extras)
 library(htmltools)
+library(readxl)
+library(writexl)
 ```
 
 # Acquire complete data from the arcgis map
 ```{r}
-intersection_url <- 
-  "https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/survey123_84951e642e3a49998a9cfba407142ac5_results/FeatureServer/0/query"
-
-street_url <- 
-  "https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/survey123_da9c3d28841f484e8cd88f960513d183_results/FeatureServer/0/query"
+intersection_url <- "https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/survey123_84951e642e3a49998a9cfba407142ac5_results/FeatureServer/0/query"
+street_url <- "https://services6.arcgis.com/yG5s3afENB5iO9fj/arcgis/rest/services/survey123_da9c3d28841f484e8cd88f960513d183_results/FeatureServer/0/query"
 
 download_arcgis <- function(url, geometry_type = c("street", "intersection"), batch_size = 1000) {
   geometry_type <- match.arg(geometry_type)
@@ -28,11 +28,7 @@ download_arcgis <- function(url, geometry_type = c("street", "intersection"), ba
   features <- list()
 
   repeat {
-    r <- GET(url, query = list(
-        where = "1=1", outFields = "*", returnGeometry = TRUE,
-        orderByFields = "objectid ASC", resultOffset = offset,
-        resultRecordCount = batch_size,f = "json"
-      ))
+    r <- GET(url, query = list(where = "1=1", outFields = "*", returnGeometry = TRUE, orderByFields = "objectid ASC", resultOffset = offset, resultRecordCount = batch_size, f = "json"))
     x <- fromJSON(content(r, "text"), simplifyDataFrame = FALSE)
     n <- length(x$features)
     cat("Offset:", offset, " Returned:", n, "\n")
@@ -48,33 +44,26 @@ download_arcgis <- function(url, geometry_type = c("street", "intersection"), ba
 
   # Attributes
   attributes <- map_dfr(features,
-    ~{
-      attrs <- .x$attributes
+    ~{attrs <- .x$attributes
       attrs[map_lgl(attrs, is.null)] <- NA
-      as_tibble(attrs)
-    }
-  )
+      as_tibble(attrs)})
 
   # Geometry
   if (geometry_type == "intersection") {
     geometry <- st_sfc(map(features, ~st_point(c(.x$geometry$x, .x$geometry$y))), crs = 4326)
-    
   } else if (geometry_type == "street") {
     geometry <- st_sfc(map(
       features, function(f) {
       paths <- f$geometry$paths
       # Convert each path in the array into a coordinate matrix
       lines <- lapply(seq_len(dim(paths)[1]), function(i) {
-        paths[i, , ]}
-      )
+        paths[i, , ]})
 
       if (length(lines) == 1) {
         st_linestring(lines[[1]])
       } else {
-        st_multilinestring(lines)
-      }}),
-    crs = 4326)
-  }
+        st_multilinestring(lines)}}),
+    crs = 4326)}
 
   st_as_sf(bind_cols(attributes, geometry = geometry))
 }
@@ -96,10 +85,8 @@ honorary_sf <- honorary_sf %>%
     creation_dt = as.POSIXct(CreationDate / 1000, origin = '1970-01-01', tz = 'UTC'),
     edit_dt = as.POSIXct(EditDate / 1000, origin = '1970-01-01', tz = 'UTC'),
     enactment_dt = as.POSIXct(enactment_date / 1000, origin = '1970-01-01', tz = 'UTC'),
-    # Date only
-    enactment_date = as.Date(enactment_dt),
-    # Calendar year
-    enactment_year = as.integer(format(enactment_date, '%Y'))
+    enactment_date = as.Date(enactment_dt), # Date only
+    enactment_year = as.integer(format(enactment_date, '%Y')) # Calendar year
   ) %>%
   mutate(new_name = str_squish(new_name))
 
@@ -108,15 +95,15 @@ hits <- honorary_sf %>% filter(enactment_date >= as.Date("2001/09/11"))  %>%
   select(new_name, biographical_information, limits, borough, zip_code, enactment_year, present_name, category, introduced_by_council_members, geometry) %>%
   unique()
 
-# Search for 9/11 keywords in bio
+# Search for mention of 9/11 in bio or name
 date <- hits %>%
-  filter(str_detect(
-    str_to_lower(biographical_information),
-    '9/11|9-11|9.11|september 11'
-  ))
+  filter(str_detect(str_to_lower(biographical_information), '9/11|9-11|9\\.11|september 11') |
+    str_detect(str_to_lower(new_name), '9/11|9-11|9\\.11|september 11'))
 
+# Search for bios that don't mention 9/11 explicitly but contain related phrases
 keywords <- regex("world trade center|wtc|twin towers|ground zero", ignore_case = TRUE)
 exclude <- regex("9/11|september 11|9-11|9.11", ignore_case = TRUE)
+# Also see these whitelisted names uncovered in voices project
 other_hits <- honorary_sf %>% filter(
   (str_detect(biographical_information, keywords) & !str_detect(biographical_information, exclude)) |
   new_name %in% c("Carl Allen Peralta Street", "Captain Vincent F. Giammona Way", "Craig W. Staub Way", "Lt. Dennis Mojica Corner",
@@ -124,14 +111,15 @@ other_hits <- honorary_sf %>% filter(
                   "Lt. Joseph Agnello Ladder 118, FDNY Street", "Lucia Crifasi Street", "Mark and Stephen Colaio Way", 
                   "Martin J. Egan, Jr. Corner", "Michael A. Marti Street", "Michael Stabile Way", "Patricia A. Kuras 9/11 Memorial Way",
                   "Peter Raimondi Way", "Richard Allen Pearlman Lane", "Rosemary Ann Smith Place", "Firefighter Timothy M. Welty Street",
-                  "Firefighter Thomas R. Kelly Avenue", "Christopher Racaniello 9/11 Memorial Way", "Vincent Laieta Jr., Way")
+                  "Firefighter Thomas R. Kelly Avenue", "Christopher Racaniello 9/11 Memorial Way", "Vincent Laieta Jr., Way", "Arthur Warren Scullin Way",
+                  "Jody Tepedino 9-11 Memorial Way")
   ) %>%
     select(new_name, biographical_information, limits, borough, zip_code, enactment_year, present_name, category, introduced_by_council_members, geometry) %>%
   unique()
 
 final <- rbind(date, other_hits)
 
-# Remove those with insufficient involvement
+# Remove those with insufficient involvement (determined by Brad)
 blacklist <- c("Anthony Varvaro Way", "Cono D’ Alto Way", "Lawrence “Larry” Morrish Way", "Jim McQuade Way", 
 "Lucy and Lenny Cecere Way", "Don Lee Way", "Don B Lee Way", "Augie Ayala Jr. Way", "Kevin J. Walsh Way",
 "Lance Cpl. Michael D. Glover USMC Way", "Firefighter Thomas C. Brick Way", "Thomas C. Brick Way",
@@ -141,50 +129,100 @@ blacklist <- c("Anthony Varvaro Way", "Cono D’ Alto Way", "Lawrence “Larry�
 "Marine Lance Corporal William Wayne White Street", "Brother Ralph Clifford Way", "Lori Allison Singer Avenue",
 "Jodie Lane Place", "Private 2nd Class Brian Grant Street “Operation Iraqi Freedom”", "African Square",
 "Stan Brooks Way", "Honorable Louis R. Jerome Way", "Franklin J. Havlicek Place", "Mary V. Lauro Way", 
-"Stephen “Snapper” Knapp", "Bobby Bello Field", "Sgt. Mario Nelson Haitian Warrior", "John M. D’Amato Way", "Pfc. Hernando Rios Place", "Irwin B. Cohen Way", 'Andy "The Barber" Foxe Way', "Melvin “Mel” Doby Memorial Way", "Dennis M. Hogan Way", "Citizens of Mola di Bari Way", "Detective Raymond Abear Way")
+"Stephen “Snapper” Knapp", "Bobby Bello Field", "Sgt. Mario Nelson Haitian Warrior", "John M. D’Amato Way", 
+"Pfc. Hernando Rios Place", "Irwin B. Cohen Way", 'Andy "The Barber" Foxe Way', "Melvin “Mel” Doby Memorial Way", 
+"Dennis M. Hogan Way", "Citizens of Mola di Bari Way", "Detective Raymond Abear Way", "Nancy DeBenedittis MAMA’s WAY")
 
 final <- final %>% filter(!new_name %in% blacklist)
+
+# Add scraped data and save to excel for manual tagging (loses geometry, have to merge back later)
+scraped <- read_excel("../data/nyc_memorials_manual_geocoded.xlsx")
+scraped <- scraped %>% 
+  select(-state, -victims_count, -victims_listed, -street, -city, -address_state, -country, -address_full, -map_query, -in_nyc, -geo_method, -geo_status, -geo_bbl) %>% 
+  rename(new_name = name, biographical_information = about, zip_code = zip, borough = region) %>%
+  filter(!is.na(longitude)) # Drop obs without coords (these wouldn't be mapped anyway)
+scraped_sf <- st_as_sf(scraped, coords = c("longitude", "latitude"), crs = 4326)
+total <- bind_rows(final, scraped_sf) %>% unique()
+write_xlsx(total, path = "../data/total.xlsx")
 ```
 
-# Create New Map
+# Clean and merge coded data
 ```{r}
-# Columns to include in popup
-popup_cols <- setdiff(names(final), attr(final, "sf_column"))
+# Read in coded data, having removed dupes, corrected typos, and categorized memorials
+total_edits <- read_xlsx("../data/total_edits.xlsx")
+
+# Dedupe names in total (and fix voicescenter misspellings)
+total <- total %>%
+  mutate(
+    new_name = case_when(
+      new_name == "Memorial Treeway of Champion Trees: Calvary Cemetary" ~ "Memorial Treeway of Champion Trees: Calvary Cemetery",
+      new_name == "Conseleya 9/11 Memorial" ~ "Conselyea 9/11 Memorial",
+      new_name == "Forest Park Memorial Drive" & introduced_by_council_members == "Holden" ~ "Forest Park Memorial Drive (Outside Park)",
+      new_name == "Forest Park Memorial Drive" & introduced_by_council_members == "Crowley " ~ "Forest Park Memorial Drive (Inside Park)",
+      new_name == "Giuseppa Vendome Way" & limits == "At the intersection of 24th Avenue and Crescent Street" ~ "Giuseppa Vendome Way (Crescent St)",
+      new_name == "Giuseppa Vendome Way" & limits == "At the intersection of 24th Avenue and 26th Street" ~ "Giuseppa Vendome Way (26th St)",
+      new_name == "Officer Glen Pettit Corner" & limits == "At the northwest corner of East 21st Street and 2nd Avenue" ~ "Officer Glen Pettit Corner (21st St)",
+      new_name == "Officer Glen Pettit Corner" & limits == "Between 2nd Avenue and 3rd Avenue" ~ "Officer Glen Pettit Corner (3rd Ave)",
+
+      # Keep everything else unchanged
+      TRUE ~ new_name
+    )) %>%
+  filter(
+    !(new_name %in% c("Firefighter Timothy M. Welty Street", "Mark and Stephen Colaio Way", "Michael A. Marti Street", "Vincent Cangelosi Memorial Way") & is.na(limits)),
+    !(new_name == "Liberty Oaks 9/11 Memorial" & zip_code == 11225),
+  )
+
+# Merge geometries back in
+total_edits <- total_edits %>%
+  left_join(total %>% select(new_name, geometry), by = "new_name") %>%
+  st_as_sf()
 
 # Pretty variable names
 pretty_name <- function(x) {x |> str_replace_all("_", " ") |> str_to_title()}
+```
 
+
+# Create New Map
+```{r}
 # Build popup HTML
-popup_html <- map_chr(seq_len(nrow(final)), function(i) {
-  vals <- final[i, popup_cols] |> st_drop_geometry()
-  vals_list <- vals[1, ] |> as.list()
-  
-  # Popup title
-  title <- htmlEscape(vals_list$new_name)
+vals <- total_edits |> st_drop_geometry()
 
+popup_html <- map_chr(seq_len(nrow(vals)), function(i) {
+  
+  vals_list <- vals[i, ] |> as.list()
+  # Popup title
+  title <- htmlEscape(as.character(vals_list$new_name))
   # Remove fields that will be displayed separately
   body_fields <- vals_list[!names(vals_list) %in% c("new_name", "biographical_information")]
-
+  # Remove fields that are NA for this row
+  body_fields <- body_fields[!map_lgl(body_fields, ~is.null(.x) || length(.x) == 0 || is.na(.x))]
+  
   # Metadata fields
   rows <- map2_chr(
-    pretty_name(names(body_fields)),
+    names(body_fields),
     body_fields,
     ~sprintf(
       "<div style='
           font-size:12px;
           line-height:1.35;
           margin-bottom:3px;'>
-         
          <span style='font-weight:bold;'>%s:</span> %s
-
        </div>",
-      htmlEscape(.x),
-      htmlEscape(ifelse(is.null(.y) || is.na(.y), "", as.character(.y)))))
+      
+      # Don't apply pretty_name() to URL
+      htmlEscape(
+        if (.x == "URL") {
+          .x
+        } else {
+          pretty_name(.x)
+        }),
+      
+      htmlEscape(as.character(.y))))
 
-  # Biography section
+  # Information section
   bio <- vals_list$biographical_information
 
-  if (is.null(bio) || is.na(bio)) {
+  if (is.null(bio) || length(bio) == 0 || is.na(bio)) {
     bio_section <- ""
   } else {
     bio_section <- sprintf(
@@ -194,7 +232,7 @@ popup_html <- map_chr(seq_len(nrow(final)), function(i) {
            font-weight:bold;
            font-size:12px;
            margin-bottom:4px;'>
-         Biographical Information
+         Information
        </div>
 
        <div style='
@@ -207,7 +245,7 @@ popup_html <- map_chr(seq_len(nrow(final)), function(i) {
            padding-right:4px;'>
          %s
        </div>",
-      htmlEscape(bio))}
+      htmlEscape(as.character(bio)))}
 
   paste0(
     "<div style='
@@ -221,51 +259,536 @@ popup_html <- map_chr(seq_len(nrow(final)), function(i) {
       "<div style='
           position:sticky;
           top:0;
-          background:white;
+          background:#292929;
           z-index:100;
           padding-bottom:5px;
           margin-bottom:6px;
-          border-bottom:1px solid #ddd;
+          border-bottom:1px solid #444;
           font-size:15px;
           font-weight:bold;'>",
         title,
       "</div>",
+      
       paste(rows, collapse = ""),
       bio_section,
-    "</div>"
-  )
+      
+    "</div>")
 })
 
+
 # Geometry indices
-line_idx <- which(st_geometry_type(final) == "LINESTRING")
-point_idx <- which(st_geometry_type(final) == "POINT")
+line_idx <- which(st_geometry_type(total_edits) %in% c("LINESTRING", "MULTILINESTRING"))
+point_idx <- which(st_geometry_type(total_edits) == "POINT")
 
-map <- leaflet() %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  addPolylines(
-    data = final[line_idx, ],
-    popup = popup_html[line_idx],
-    popupOptions = popupOptions(maxWidth = 340, minWidth = 220),
-    weight = 4
-  ) %>%
-  addCircleMarkers(
-    data = final[point_idx, ],
-    popup = popup_html[point_idx],
-    popupOptions = popupOptions(maxWidth = 340, minWidth = 220),
-    radius = 5,
-    stroke = FALSE,
-    fillOpacity = 0.9
-  )
+# Find Type column regardless of capitalization
+type_col <- names(total_edits)[tolower(names(total_edits)) == "type"]
 
-htmlwidgets::saveWidget(
-  map,
-  "index.html",
-  selfcontained = TRUE
+if (length(type_col) != 1) {
+  stop("Could not uniquely identify the Type column. Found: ", paste(type_col, collapse = ", "))}
+
+# Type values
+type_values <- total_edits[[type_col]]
+
+# Colors based on Type
+type_colors <- case_when(
+  type_values == "FDNY"            ~ "red",
+  type_values == "Police"          ~ "blue",
+  type_values == "First Responder" ~ "purple",
+  type_values == "Volunteer"       ~ "green",
+  type_values == "Victim"          ~ "white",
+  type_values == "Community"       ~ "yellow",
+  type_values == "Other Memorial"  ~ "black",
+  TRUE                             ~ "gray"
 )
-```
 
-# Add scraped data
-```{r}
-scraped <- read_csv("data/nyc_memorials_manual_geocoded.csv")
+# Memorial types
+memorial_types <- c("FDNY", "Police", "First Responder", "Volunteer", "Victim", "Community", "Other Memorial")
+
+# Dark-mode colors
+dark_bg <- "#1f1f1f"
+dark_panel <- "#292929"
+dark_border <- "#444444"
+dark_text <- "#eeeeee"
+dark_muted <- "#aaaaaa"
+
+# Build map
+map <- leaflet() %>%
+  addProviderTiles(providers$CartoDB.DarkMatter)
+
+# Add each Type as its own Leaflet group
+for (type in memorial_types) {
+  idx <- which(type_values == type)
+  if (length(idx) == 0) next
+  
+  # Separate lines and points
+  type_line_idx <- idx[st_geometry_type(total_edits[idx, ]) %in% c("LINESTRING", "MULTILINESTRING")]
+  type_point_idx <- idx[st_geometry_type(total_edits[idx, ]) == "POINT"]
+  
+# Lines
+if (length(type_line_idx) > 0) {
+  # White outline / casing
+  map <- map %>%
+    addPolylines(
+      data = total_edits[type_line_idx, ],
+      color = "white",
+      weight = 7,
+      opacity = 1,
+      group = type
+    )
+  
+  # Colored line
+  map <- map %>%
+    addPolylines(
+      data = total_edits[type_line_idx, ],
+      popup = popup_html[type_line_idx],
+      popupOptions = popupOptions(
+        maxWidth = 340,
+        minWidth = 220,
+        closeButton = TRUE,
+        className = "dark-popup"
+      ),
+      color = type_colors[type_line_idx],
+      weight = 4,
+      opacity = 1,
+      label = ~new_name,
+      group = type
+    )
+}
+  
+  # Points
+  if (length(type_point_idx) > 0) {
+    map <- map %>%
+      addCircleMarkers(
+        data = total_edits[type_point_idx, ],
+        popup = popup_html[type_point_idx],
+        popupOptions = popupOptions(
+          maxWidth = 340,
+          minWidth = 220,
+          closeButton = TRUE,
+          className = "dark-popup"
+        ),
+        radius = 5,
+        stroke = TRUE,
+        color = "white",
+        weight = 1.5,
+        fillColor = type_colors[type_point_idx],
+        fillOpacity = 0.9,
+        label = ~new_name,
+        group = type
+      )}}
+
+# Type filter / legend
+map <- map %>%
+  addLayersControl(overlayGroups = memorial_types, options = layersControlOptions(collapsed = FALSE))
+
+# Custom dark-mode UI
+map <- map %>%
+  htmlwidgets::onRender("
+    function(el, x) {
+
+      var paths = el.querySelectorAll(
+        '.leaflet-overlay-pane path'
+      );
+
+      paths.forEach(function(path) {
+        path.style.strokeLinecap = 'round';
+        path.style.strokeLinejoin = 'round';
+      });
+
+      var map = this;
+
+      /* =============================================
+         TWIN TOWERS
+         ============================================= */
+      
+      var towerIcon = L.divIcon({
+        className: 'twin-tower-icon',
+        html:
+          '<div class=\"tower-marker\">' +
+            '<div class=\"tower\"></div>' +
+            '<div class=\"tower\"></div>' +
+          '</div>',
+        iconSize: [30, 42],
+        iconAnchor: [15, 42]
+      });
+      
+      L.marker(
+        [40.711592, -74.013211],
+        {icon: towerIcon, interactive: false}
+      ).addTo(map);
+
+      /* =============================================
+         GLOBAL MAP UI
+         ============================================= */
+
+      var style = document.createElement('style');
+
+      style.innerHTML = `
+
+        /* -----------------------------------------
+           TWIN TOWERS
+           ----------------------------------------- */
+        
+        .twin-tower-icon {
+          background: transparent !important;
+          border: none !important;
+        }
+        
+        .tower-marker {
+          display: flex;
+          justify-content: center;
+          align-items: flex-end;
+          gap: 4px;
+          width: 30px;
+          height: 42px;
+          opacity: 0.85;
+        }
+        
+        .tower {
+          width: 8px;
+          height: 38px;
+          background: #eeeeee;
+          border: 1px solid #777;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+          position: relative;
+        }
+        
+        .tower:before {
+          content: '';
+          position: absolute;
+          top: -4px;
+          left: 1px;
+          width: 4px;
+          height: 4px;
+          background: #eeeeee;
+        }
+
+        /* -----------------------------------------
+           SEARCH BOX
+           ----------------------------------------- */
+
+        .memorial-search {
+          background: #292929 !important;
+          border: 1px solid #444 !important;
+          border-radius: 7px !important;
+          padding: 7px !important;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.45) !important;
+        }
+
+        #memorial-search-input {
+          box-sizing: border-box;
+          width: 100%;
+          padding: 8px 10px;
+          border: 1px solid #555;
+          border-radius: 5px;
+          background: #1f1f1f;
+          color: #eeeeee;
+          font-size: 13px;
+          outline: none;
+        }
+
+        #memorial-search-input::placeholder {color: #999;}
+        #memorial-search-input:focus {border-color: #777;}
+
+        #memorial-search-results {
+          max-height: 250px;
+          overflow-y: auto;
+          margin-top: 4px;
+          border-radius: 4px;
+        }
+
+        .memorial-search-result {
+          padding: 7px 9px;
+          color: #dddddd;
+          background: #292929;
+          border-top: 1px solid #3d3d3d;
+          font-size: 12px;
+          cursor: pointer;
+        }
+
+        .memorial-search-result:hover {
+          background: #383838;
+          color: white;
+        }
+
+        /* -----------------------------------------
+           LAYER CONTROL
+           ----------------------------------------- */
+
+        .leaflet-control-layers {
+          background: #292929 !important;
+          color: #eeeeee !important;
+          border: 1px solid #444 !important;
+          border-radius: 7px !important;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.45) !important;
+          padding: 9px 11px !important;
+          font-size: 12px !important;
+        }
+
+        .leaflet-control-layers-list {color: #eeeeee !important;}
+        .leaflet-control-layers label {color: #eeeeee !important;}
+        .leaflet-control-layers-separator {border-top: 1px solid #444 !important;}
+
+        /* -----------------------------------------
+           POPUPS
+           ----------------------------------------- */
+
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+          background: #292929 !important;
+          color: #eeeeee !important;
+          box-shadow: 0 3px 15px rgba(0,0,0,0.5) !important;
+        }
+
+        .leaflet-popup-content-wrapper {
+          border: 1px solid #444;
+          border-radius: 6px !important;
+        }
+
+        .leaflet-popup-tip {border: 1px solid #444;}
+        .leaflet-popup-content {margin: 10px 12px !important;}
+
+        .leaflet-popup-close-button {
+          color: #aaaaaa !important;
+          font-size: 18px !important;
+        }
+
+        .leaflet-popup-close-button:hover {color: white !important;}
+
+        /* -----------------------------------------
+           HOVER TOOLTIPS
+           ----------------------------------------- */
+      
+        .leaflet-tooltip {
+          background: #292929 !important;
+          color: #eeeeee !important;
+          border: 1px solid #444 !important;
+          border-radius: 5px !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+          font-size: 11px !important;
+          font-weight: 500 !important;
+          padding: 5px 7px !important;
+        }
+      
+        .leaflet-tooltip-top:before {border-top-color: #292929 !important;}
+        .leaflet-tooltip-bottom:before {border-bottom-color: #292929 !important;}
+        .leaflet-tooltip-left:before {border-left-color: #292929 !important;}
+        .leaflet-tooltip-right:before {border-right-color: #292929 !important;}
+
+        /* -----------------------------------------
+           POPUP CONTENT
+           ----------------------------------------- */
+
+        .dark-popup-content {color: #dddddd;}
+
+        .dark-popup-title {
+          color: white;
+          font-size: 14px;
+          font-weight: 600;
+          line-height: 1.3;
+          padding-bottom: 6px;
+          margin-bottom: 7px;
+          border-bottom: 1px solid #444;
+        }
+
+        .dark-popup-field {
+          color: #cccccc;
+          font-size: 11px;
+          line-height: 1.4;
+          margin-bottom: 4px;
+        }
+
+        .dark-popup-field strong {
+          color: #eeeeee;
+          font-weight: 600;
+        }
+
+        .dark-popup-info-title {
+          color: #eeeeee;
+          font-size: 11px;
+          font-weight: 600;
+          margin-top: 8px;
+          margin-bottom: 4px;
+          padding-top: 7px;
+          border-top: 1px solid #444;
+        }
+
+        .dark-popup-info {
+          color: #bbbbbb;
+          font-size: 11px;
+          line-height: 1.4;
+        }
+
+      `;
+
+      document.head.appendChild(style);
+
+      /* =============================================
+         SEARCH CONTROL
+         ============================================= */
+
+      var searchControl = L.control({position: 'topleft'});
+
+      searchControl.onAdd = function(map) {
+
+        var div = L.DomUtil.create(
+          'div',
+          'leaflet-control memorial-search'
+        );
+
+        div.innerHTML =
+          '<input id=\"memorial-search-input\" ' +
+          'type=\"text\" ' +
+          'placeholder=\"Search for a memorial\" ' +
+          'autocomplete=\"off\">' +
+
+          '<div id=\"memorial-search-results\"></div>';
+
+        L.DomEvent.disableClickPropagation(div);
+        L.DomEvent.disableScrollPropagation(div);
+
+        return div;
+      };
+
+      searchControl.addTo(map);
+
+      var input = document.getElementById('memorial-search-input');
+      var results = document.getElementById('memorial-search-results');
+
+      /* =============================================
+         SEARCH
+         ============================================= */
+
+      input.addEventListener('input', function() {
+        var query = input.value.toLowerCase().trim();
+        results.innerHTML = '';
+        if (query.length === 0) return;
+        var matches = [];
+        
+        map.eachLayer(function(layer) {
+
+          if (!map.hasLayer(layer)) return;
+          if (!layer.options || !layer.options.label) return;
+
+          var name = layer.options.label;
+
+          if (typeof name !== 'string') {
+            if (name && name.options && name.options.content) {
+              name = name.options.content;
+            } else {
+              return;
+            }
+          }
+
+          name = String(name);
+
+          if (name.toLowerCase().includes(query)) {
+            matches.push({
+              name: name,
+              layer: layer
+            });
+          }
+        });
+
+        if (matches.length === 0) {
+          results.innerHTML =
+            '<div class=\"memorial-search-result\" ' +
+            'style=\"cursor:default;color:#888;\">' +
+            'No memorials found' +
+            '</div>';
+          return;
+        }
+
+        matches.forEach(function(match) {
+          var item = document.createElement('div');
+          item.className = 'memorial-search-result';
+          item.textContent = match.name;
+
+          item.addEventListener(
+            'click',
+            function() {
+              var layer = match.layer;
+              if (layer.getBounds) {
+                var bounds = layer.getBounds();
+                if (bounds.isValid()) {
+                  map.fitBounds(bounds, {padding: [40, 40]});
+                }
+
+              } else if (layer.getLatLng) {
+                map.setView(layer.getLatLng(), 17);
+              }
+
+              if (layer.openPopup) {
+                layer.openPopup();
+              }
+
+              results.innerHTML = '';
+            }
+          );
+
+          results.appendChild(item);
+        });
+      });
+
+      /* =============================================
+         STYLE LEGEND
+         ============================================= */
+      var colors = {
+        'FDNY': 'red',
+        'Police': 'blue',
+        'First Responder': 'purple',
+        'Volunteer': 'green',
+        'Victim': 'white',
+        'Community': 'yellow',
+        'Other Memorial': 'black'
+      };
+
+      var control = el.querySelector('.leaflet-control-layers');
+
+      if (control) {
+        var heading = document.createElement('div');
+        heading.innerHTML = 'Filter by memorial type';
+
+        heading.style.fontWeight = '600';
+        heading.style.fontSize = '12px';
+        heading.style.color = '#eeeeee';
+        heading.style.marginBottom = '5px';
+        heading.style.paddingBottom = '5px';
+        heading.style.borderBottom =
+          '1px solid #444';
+
+        control.insertBefore(heading, control.querySelector('.leaflet-control-layers-list'));
+        var labels = control.querySelectorAll('.leaflet-control-layers-overlays label');
+        labels.forEach(function(label) {
+          var text = label.textContent.trim();
+          var color = colors[text];
+
+          if (!color) return;
+
+          var dot = document.createElement('span');
+          dot.style.display = 'inline-block';
+
+          dot.style.width = '10px';
+          dot.style.height = '10px';
+          dot.style.borderRadius = '50%';
+          dot.style.border = '1px solid white';
+          dot.style.backgroundColor = color;
+          dot.style.marginLeft = '5px';
+          dot.style.marginRight = '5px';
+          dot.style.verticalAlign = 'middle';
+
+          var checkbox = label.querySelector('input');
+
+          if (checkbox) {
+            checkbox.insertAdjacentElement('afterend', dot);
+          }
+
+        });
+      }
+    }
+  ")
+
+# Save map
+htmlwidgets::saveWidget(map, "../index.html", selfcontained = TRUE)
 ```
 

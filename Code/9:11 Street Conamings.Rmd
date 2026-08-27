@@ -148,7 +148,7 @@ write_xlsx(total, path = "../data/total.xlsx")
 
 # Clean and merge coded data
 ```{r}
-# Read in coded data, having removed dupes, corrected typos, and categorized memorials
+# Read in coded data, having removed dupes, corrected typos, selected the most relevant CM, and categorized memorials
 total_edits <- read_xlsx("../data/total_edits.xlsx")
 
 # Dedupe names in total (and fix voicescenter misspellings)
@@ -291,18 +291,18 @@ type_values <- total_edits[[type_col]]
 
 # Colors based on Type
 type_colors <- case_when(
-  type_values == "FDNY"            ~ "red",
-  type_values == "Police"          ~ "blue",
-  type_values == "First Responder" ~ "purple",
-  type_values == "Volunteer"       ~ "green",
-  type_values == "Victim"          ~ "white",
-  type_values == "Community"       ~ "yellow",
-  type_values == "Other Memorial"  ~ "black",
-  TRUE                             ~ "gray"
+  type_values == "FDNY/EMS"          ~ "red",
+  type_values == "Police"            ~ "blue",
+  type_values == "First Responder"   ~ "purple",
+  type_values == "Volunteer"         ~ "green",
+  type_values == "Civilian Casualty" ~ "white",
+  type_values == "Community"         ~ "yellow",
+  type_values == "Other Memorial"    ~ "black",
+  TRUE                               ~ "gray"
 )
 
 # Memorial types
-memorial_types <- c("FDNY", "Police", "First Responder", "Volunteer", "Victim", "Community", "Other Memorial")
+memorial_types <- c("FDNY/EMS", "Police", "First Responder", "Volunteer", "Civilian Casualty", "Community", "Other Memorial")
 
 # Dark-mode colors
 dark_bg <- "#1f1f1f"
@@ -312,8 +312,21 @@ dark_text <- "#eeeeee"
 dark_muted <- "#aaaaaa"
 
 # Build map
+readRenviron(".Renviron")
+carto_key <- Sys.getenv("CARTO_KEY")
+
 map <- leaflet() %>%
-  addProviderTiles(providers$CartoDB.DarkMatter)
+  addTiles(
+    urlTemplate = paste0(
+      "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=",
+      carto_key
+    ),
+    attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    options = tileOptions(
+      subdomains = c("a", "b", "c", "d"),
+      maxZoom = 20
+    )
+  )
 
 # Add each Type as its own Leaflet group
 for (type in memorial_types) {
@@ -734,11 +747,11 @@ map <- map %>%
          STYLE LEGEND
          ============================================= */
       var colors = {
-        'FDNY': 'red',
+        'FDNY/EMS': 'red',
         'Police': 'blue',
         'First Responder': 'purple',
         'Volunteer': 'green',
-        'Victim': 'white',
+        'Civilian Casualty': 'white',
         'Community': 'yellow',
         'Other Memorial': 'black'
       };

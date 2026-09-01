@@ -1,0 +1,174 @@
+/* =========================
+  Base body text
+========================= */
+  
+  body {
+    font-family: "Open Sans", sans-serif;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Open Sans", sans-serif;
+}
+
+/* Remove horizontal rules beneath section headers */ 
+h1, h2, h3, h4, h5, h6 { 
+  border: none !important; border-bottom: none !important; 
+}
+
+/* =========================
+  Title block
+========================= */
+  
+  h1.title {
+    color: #FFFFFF;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 0.3rem;
+  }
+
+/* Author line */
+  .subtitle {
+    color: #FFFFFF;
+      margin-bottom: 2.5rem;
+  }
+
+/* Council Logo */
+  #header::before {
+  content: "";
+display: block;
+
+width: 180px;
+height: 80px;
+
+background-image: url("data-council-logo.png");
+background-size: contain;
+background-repeat: no-repeat;
+background-position: center;
+
+background-color: rgba(255, 255, 255, 0.92);
+border-radius: 6px;
+
+margin-bottom: 1rem;
+}
+
+.quarto-title-banner {
+  position: relative;
+  
+  min-height: 500px;
+  
+  display: flex;
+  
+  background-size: cover;
+  background-position: center 75%;
+  background-repeat: no-repeat;
+}
+
+.quarto-title-banner .quarto-title-block {
+  position: relative;
+  z-index: 10;
+  padding: 2rem 0 3rem 0;
+}
+
+/* Hide date if RStudio inserts blank space */
+  .date {
+    display: none;
+  }
+
+@media (max-width: 768px) {
+  .quarto-title-banner {
+    min-height: 420px;
+  }
+}
+
+
+/* =========================
+  Navbar
+========================= */
+  
+  .navbar-brand img {
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 5px;
+    padding: 4px 6px;
+  }
+
+
+/* =========================
+  Heading anchor links
+========================= */
+  
+  .anchorjs-link {
+    display: none !important;
+  }
+
+
+/* =========================
+  Leaflet Widgets
+========================= */
+  
+  .leaflet-container {
+    max-width: 672px;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+
+/* =========================
+  Fullscreen iframe
+========================= */
+  
+  .iframe-container {
+    position: relative;
+    width: 100%;
+  }
+
+.fullscreen-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  
+  background: rgba(18, 21, 22, 0.85);
+  color: #ffffff;
+    
+    font-family: "Open Sans", sans-serif;
+  font-size: 0.85rem;
+  
+  cursor: pointer;
+}
+
+.fullscreen-button:hover {
+  background: rgba(18, 21, 22, 1);
+}
+
+
+/* =========================
+  Footnotes / citations
+========================= */
+  
+  a.footnote-ref,
+a[href^="#fn"] {
+  text-decoration: none;
+  font-size: 0.8em;
+  vertical-align: super;
+}
+
+.footnote-hover {
+  cursor: help;
+  color: #2c5aa0;
+}
+
+section.footnotes {
+  display: none;
+}
+
+section.footnotes,
+#quarto-appendix {
+display: none;
+}

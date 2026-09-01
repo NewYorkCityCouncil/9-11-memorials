@@ -1,0 +1,59 @@
+---
+title: "9/11 Memorials and Street Co-Namings in New York City"
+subtitle: "NYCC Data Team"
+title-block-banner: "docs/memorial-banner.jpg"
+
+format:
+  html:
+    toc: false
+    theme: darkly
+    css: docs/styles.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+## About the map
+
+To commemorate the 25th anniversary of 9/11, the NYC Council Data Team has compiled a map of memorials and street co-namings honoring those lost to the attacks. Memorials were scraped from [Voices Center for Resilience](https://www.voicescenter.org) and filtered to include those with documented locations in NYC. Street co-namings were sourced from the [NYC Honorary Street Names Map](https://streetnamesmap-nyc.hub.arcgis.com/) and filtered to include those with relevant mentions of 9/11 and related terms in the name or biographical information. 
+
+If biographical information was not available through the Honorary Street Names Map, it was sourced from [this index of honorary street names](http://www.nycstreets.info) or an online obituary cited in the popup. The City Council Member listed in the "Council Member" field is the person who represented the district containing the co-named street at the time the co-naming was adopted. 
+
+The Data Team categorized the objects on the map according to the people they commemorate. FDNY/EMS represents members of the Fire Department, Police represents NYPD and all other police officers, First Responder represents all other responders in the line of duty, Volunteer represents civilian responders, Civilian Casualty represents civilians targeted by the attacks, Community represents affinity groups affected by the attacks, and Other Memorial represents places that broadly commemorate 9/11.
+
+The objects shown on the map are not an exhaustive collection of 9/11 commemorations across NYC and were last updated in September of 2026. If you would like a location to be added to the map, reach out to [datainfo@council.nyc.gov](mailto:datainfo@council.nyc.gov).
+
+```{=html}
+<div class="iframe-container">
+  <button class="fullscreen-button" onclick="toggleFullscreen(this)">
+    ⛶ Fullscreen
+  </button>
+
+  <iframe
+    src="map.html"
+    width="100%"
+    height="750px"
+    style="border:none;"
+    allowfullscreen>
+  </iframe>
+</div>
+
+<script>
+function toggleFullscreen(button) {
+  const iframe = button.parentElement.querySelector("iframe");
+
+  if (!document.fullscreenElement) {
+    iframe.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+</script>
+```
+
+

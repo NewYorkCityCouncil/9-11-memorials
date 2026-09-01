@@ -13,6 +13,7 @@ library(jsonlite)
 library(leaflet)
 library(leaflet.extras)
 library(htmltools)
+library(htmlwidgets)
 library(readxl)
 library(writexl)
 ```
@@ -176,6 +177,11 @@ total <- total %>%
 total_edits <- total_edits %>%
   left_join(total %>% select(new_name, geometry), by = "new_name") %>%
   st_as_sf()
+
+# Correct Plaza of Heroes (per Brad)
+total_edits$geometry[total_edits$new_name == "Plaza of Heroes"] <- 
+  st_sfc(st_point(c(-73.8965081574393, 40.72597950418192)), crs = st_crs(total_edits))
+total_edits$limits[total_edits$new_name == "Plaza of Heroes"] <- "The intersection of Borden Avenue and 68th Street"
 
 # Pretty variable names
 pretty_name <- function(x) {x |> str_replace_all("_", " ") |> str_to_title()}
@@ -392,7 +398,18 @@ if (length(type_line_idx) > 0) {
 
 # Type filter / legend
 map <- map %>%
-  addLayersControl(overlayGroups = memorial_types, options = layersControlOptions(collapsed = FALSE))
+  addLayersControl(
+    overlayGroups = memorial_types, 
+    options = layersControlOptions(collapsed = FALSE, position = "topright")
+    ) %>%
+  onRender("
+    function(el, x) {
+      var control = el.querySelector('.leaflet-control-layers');
+      if (control) {
+        control.style.marginTop = '60px';
+      }
+    }
+  ")
 
 # Custom dark-mode UI
 map <- map %>%
@@ -802,6 +819,6 @@ map <- map %>%
   ")
 
 # Save map
-htmlwidgets::saveWidget(map, "../index.html", selfcontained = TRUE)
+htmlwidgets::saveWidget(map, "../map.html", selfcontained = TRUE)
 ```
 

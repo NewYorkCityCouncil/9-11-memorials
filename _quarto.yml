@@ -1,0 +1,48 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  search: false
+  title: "" 
+  favicon: docs/favicon_logo.png
+  navbar:
+    pinned: true
+    background: dark
+    logo: docs/full-council-logo.png
+    logo-alt: "New York City Council Logo"
+    title: false
+    left:
+      - text: "FIND MY DISTRICT"
+        href: https://council.nyc.gov/districts/
+      - text: "BUDGET"
+        href: https://council.nyc.gov/budget/
+      - text: "COMMITTEES"
+        href: https://council.nyc.gov/committees/
+      - text: "LAND USE"
+        href: https://council.nyc.gov/land-use/
+      - text: "LEGISLATION"
+        href: https://legistar.council.nyc.gov/Legislation.aspx
+      - text: "PRESS RELEASES"
+        href: https://council.nyc.gov/press/
+      - text: "DATA"
+        file: https://council.nyc.gov/data/
+    tools:
+      - icon: twitter
+        href: https://x.com/NYCCouncilData
+      - icon: github
+        href: https://github.com/NewYorkCityCouncil/
+format:
+  html:
+    page-layout: full
+    grid:
+      body-width: 1000px
+      margin-width: 150px
+    theme: darkly
+    css: styles.css
+    toc: false
+    include-in-header:
+      - text: |
+          <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+editor: visual

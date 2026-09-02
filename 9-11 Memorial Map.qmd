@@ -26,7 +26,7 @@ If biographical information was not available through the Honorary Street Names 
 
 The Data Team categorized the objects on the map according to the people they commemorate. FDNY/EMS represents members of the Fire Department, Police represents NYPD and all other police officers, First Responder represents all other responders in the line of duty, Volunteer represents civilian responders, Civilian Casualty represents civilians targeted by the attacks, Community represents affinity groups affected by the attacks, and Other Memorial represents places that broadly commemorate 9/11.
 
-The objects shown on the map are not an exhaustive collection of 9/11 commemorations across NYC and were last updated in September of 2026. If you would like a location to be added to the map, reach out to [datainfo@council.nyc.gov](mailto:datainfo@council.nyc.gov).
+The objects shown on the map are not an exhaustive collection of 9/11 commemorations across NYC and were last updated in September of 2026. If you would like a location to be added to the map, reach out to [datainfo@council.nyc.gov](mailto:datainfo@council.nyc.gov). To request a new street co-naming, you can contact the relevant [community board](https://www.nyc.gov/site/communityboards/index.page).
 
 ```{=html}
 <div class="iframe-container">

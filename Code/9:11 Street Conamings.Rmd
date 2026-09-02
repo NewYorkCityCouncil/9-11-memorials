@@ -404,6 +404,9 @@ map <- map %>%
     ) %>%
   onRender("
     function(el, x) {
+      var map = this;
+      map.setMinZoom(10);
+      
       var control = el.querySelector('.leaflet-control-layers');
       if (control) {
         control.style.marginTop = '60px';

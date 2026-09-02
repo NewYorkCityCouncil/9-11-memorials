@@ -94,7 +94,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -595,422 +595,425 @@ has unrecognized data type.</code></pre>
 <span id="cb9-212"><a href="#cb9-212" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
 <span id="cb9-213"><a href="#cb9-213" aria-hidden="true" tabindex="-1"></a>  <span class="fu">onRender</span>(<span class="st">"</span></span>
 <span id="cb9-214"><a href="#cb9-214" aria-hidden="true" tabindex="-1"></a><span class="st">    function(el, x) {</span></span>
-<span id="cb9-215"><a href="#cb9-215" aria-hidden="true" tabindex="-1"></a><span class="st">      var control = el.querySelector('.leaflet-control-layers');</span></span>
-<span id="cb9-216"><a href="#cb9-216" aria-hidden="true" tabindex="-1"></a><span class="st">      if (control) {</span></span>
-<span id="cb9-217"><a href="#cb9-217" aria-hidden="true" tabindex="-1"></a><span class="st">        control.style.marginTop = '60px';</span></span>
-<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a><span class="st">      }</span></span>
-<span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
-<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a><span class="st">  "</span>)</span>
-<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a><span class="co"># Custom dark-mode UI</span></span>
-<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> map <span class="sc">%&gt;%</span></span>
-<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a>  htmlwidgets<span class="sc">::</span><span class="fu">onRender</span>(<span class="st">"</span></span>
-<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a><span class="st">    function(el, x) {</span></span>
-<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a><span class="st">      var paths = el.querySelectorAll(</span></span>
-<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a><span class="st">        '.leaflet-overlay-pane path'</span></span>
-<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a><span class="st">      );</span></span>
-<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a><span class="st">      paths.forEach(function(path) {</span></span>
-<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a><span class="st">        path.style.strokeLinecap = 'round';</span></span>
-<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a><span class="st">        path.style.strokeLinejoin = 'round';</span></span>
-<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a><span class="st">      });</span></span>
-<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-236"><a href="#cb9-236" aria-hidden="true" tabindex="-1"></a><span class="st">      var map = this;</span></span>
-<span id="cb9-237"><a href="#cb9-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-238"><a href="#cb9-238" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
-<span id="cb9-239"><a href="#cb9-239" aria-hidden="true" tabindex="-1"></a><span class="st">         TWIN TOWERS</span></span>
-<span id="cb9-240"><a href="#cb9-240" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
-<span id="cb9-241"><a href="#cb9-241" aria-hidden="true" tabindex="-1"></a><span class="st">      </span></span>
-<span id="cb9-242"><a href="#cb9-242" aria-hidden="true" tabindex="-1"></a><span class="st">      var towerIcon = L.divIcon({</span></span>
-<span id="cb9-243"><a href="#cb9-243" aria-hidden="true" tabindex="-1"></a><span class="st">        className: 'twin-tower-icon',</span></span>
-<span id="cb9-244"><a href="#cb9-244" aria-hidden="true" tabindex="-1"></a><span class="st">        html:</span></span>
-<span id="cb9-245"><a href="#cb9-245" aria-hidden="true" tabindex="-1"></a><span class="st">          '&lt;div class=</span><span class="sc">\"</span><span class="st">tower-marker</span><span class="sc">\"</span><span class="st">&gt;' +</span></span>
-<span id="cb9-246"><a href="#cb9-246" aria-hidden="true" tabindex="-1"></a><span class="st">            '&lt;div class=</span><span class="sc">\"</span><span class="st">tower</span><span class="sc">\"</span><span class="st">&gt;&lt;/div&gt;' +</span></span>
-<span id="cb9-247"><a href="#cb9-247" aria-hidden="true" tabindex="-1"></a><span class="st">            '&lt;div class=</span><span class="sc">\"</span><span class="st">tower</span><span class="sc">\"</span><span class="st">&gt;&lt;/div&gt;' +</span></span>
-<span id="cb9-248"><a href="#cb9-248" aria-hidden="true" tabindex="-1"></a><span class="st">          '&lt;/div&gt;',</span></span>
-<span id="cb9-249"><a href="#cb9-249" aria-hidden="true" tabindex="-1"></a><span class="st">        iconSize: [30, 42],</span></span>
-<span id="cb9-250"><a href="#cb9-250" aria-hidden="true" tabindex="-1"></a><span class="st">        iconAnchor: [15, 42]</span></span>
-<span id="cb9-251"><a href="#cb9-251" aria-hidden="true" tabindex="-1"></a><span class="st">      });</span></span>
-<span id="cb9-252"><a href="#cb9-252" aria-hidden="true" tabindex="-1"></a><span class="st">      </span></span>
-<span id="cb9-253"><a href="#cb9-253" aria-hidden="true" tabindex="-1"></a><span class="st">      L.marker(</span></span>
-<span id="cb9-254"><a href="#cb9-254" aria-hidden="true" tabindex="-1"></a><span class="st">        [40.711592, -74.013211],</span></span>
-<span id="cb9-255"><a href="#cb9-255" aria-hidden="true" tabindex="-1"></a><span class="st">        {icon: towerIcon, interactive: false}</span></span>
-<span id="cb9-256"><a href="#cb9-256" aria-hidden="true" tabindex="-1"></a><span class="st">      ).addTo(map);</span></span>
-<span id="cb9-257"><a href="#cb9-257" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-258"><a href="#cb9-258" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
-<span id="cb9-259"><a href="#cb9-259" aria-hidden="true" tabindex="-1"></a><span class="st">         GLOBAL MAP UI</span></span>
-<span id="cb9-260"><a href="#cb9-260" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
-<span id="cb9-261"><a href="#cb9-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-262"><a href="#cb9-262" aria-hidden="true" tabindex="-1"></a><span class="st">      var style = document.createElement('style');</span></span>
-<span id="cb9-263"><a href="#cb9-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-264"><a href="#cb9-264" aria-hidden="true" tabindex="-1"></a><span class="st">      style.innerHTML = `</span></span>
-<span id="cb9-265"><a href="#cb9-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-266"><a href="#cb9-266" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
-<span id="cb9-267"><a href="#cb9-267" aria-hidden="true" tabindex="-1"></a><span class="st">           TWIN TOWERS</span></span>
-<span id="cb9-268"><a href="#cb9-268" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
-<span id="cb9-269"><a href="#cb9-269" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
-<span id="cb9-270"><a href="#cb9-270" aria-hidden="true" tabindex="-1"></a><span class="st">        .twin-tower-icon {</span></span>
-<span id="cb9-271"><a href="#cb9-271" aria-hidden="true" tabindex="-1"></a><span class="st">          background: transparent !important;</span></span>
-<span id="cb9-272"><a href="#cb9-272" aria-hidden="true" tabindex="-1"></a><span class="st">          border: none !important;</span></span>
-<span id="cb9-273"><a href="#cb9-273" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-274"><a href="#cb9-274" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
-<span id="cb9-275"><a href="#cb9-275" aria-hidden="true" tabindex="-1"></a><span class="st">        .tower-marker {</span></span>
-<span id="cb9-276"><a href="#cb9-276" aria-hidden="true" tabindex="-1"></a><span class="st">          display: flex;</span></span>
-<span id="cb9-277"><a href="#cb9-277" aria-hidden="true" tabindex="-1"></a><span class="st">          justify-content: center;</span></span>
-<span id="cb9-278"><a href="#cb9-278" aria-hidden="true" tabindex="-1"></a><span class="st">          align-items: flex-end;</span></span>
-<span id="cb9-279"><a href="#cb9-279" aria-hidden="true" tabindex="-1"></a><span class="st">          gap: 4px;</span></span>
-<span id="cb9-280"><a href="#cb9-280" aria-hidden="true" tabindex="-1"></a><span class="st">          width: 30px;</span></span>
-<span id="cb9-281"><a href="#cb9-281" aria-hidden="true" tabindex="-1"></a><span class="st">          height: 42px;</span></span>
-<span id="cb9-282"><a href="#cb9-282" aria-hidden="true" tabindex="-1"></a><span class="st">          opacity: 0.85;</span></span>
-<span id="cb9-283"><a href="#cb9-283" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-284"><a href="#cb9-284" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
-<span id="cb9-285"><a href="#cb9-285" aria-hidden="true" tabindex="-1"></a><span class="st">        .tower {</span></span>
-<span id="cb9-286"><a href="#cb9-286" aria-hidden="true" tabindex="-1"></a><span class="st">          width: 8px;</span></span>
-<span id="cb9-287"><a href="#cb9-287" aria-hidden="true" tabindex="-1"></a><span class="st">          height: 38px;</span></span>
-<span id="cb9-288"><a href="#cb9-288" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #eeeeee;</span></span>
-<span id="cb9-289"><a href="#cb9-289" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #777;</span></span>
-<span id="cb9-290"><a href="#cb9-290" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 1px 4px rgba(0,0,0,0.5);</span></span>
-<span id="cb9-291"><a href="#cb9-291" aria-hidden="true" tabindex="-1"></a><span class="st">          position: relative;</span></span>
-<span id="cb9-292"><a href="#cb9-292" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-293"><a href="#cb9-293" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
-<span id="cb9-294"><a href="#cb9-294" aria-hidden="true" tabindex="-1"></a><span class="st">        .tower:before {</span></span>
-<span id="cb9-295"><a href="#cb9-295" aria-hidden="true" tabindex="-1"></a><span class="st">          content: '';</span></span>
-<span id="cb9-296"><a href="#cb9-296" aria-hidden="true" tabindex="-1"></a><span class="st">          position: absolute;</span></span>
-<span id="cb9-297"><a href="#cb9-297" aria-hidden="true" tabindex="-1"></a><span class="st">          top: -4px;</span></span>
-<span id="cb9-298"><a href="#cb9-298" aria-hidden="true" tabindex="-1"></a><span class="st">          left: 1px;</span></span>
-<span id="cb9-299"><a href="#cb9-299" aria-hidden="true" tabindex="-1"></a><span class="st">          width: 4px;</span></span>
-<span id="cb9-300"><a href="#cb9-300" aria-hidden="true" tabindex="-1"></a><span class="st">          height: 4px;</span></span>
-<span id="cb9-301"><a href="#cb9-301" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #eeeeee;</span></span>
-<span id="cb9-302"><a href="#cb9-302" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-303"><a href="#cb9-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-304"><a href="#cb9-304" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
-<span id="cb9-305"><a href="#cb9-305" aria-hidden="true" tabindex="-1"></a><span class="st">           SEARCH BOX</span></span>
-<span id="cb9-306"><a href="#cb9-306" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
-<span id="cb9-307"><a href="#cb9-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-308"><a href="#cb9-308" aria-hidden="true" tabindex="-1"></a><span class="st">        .memorial-search {</span></span>
-<span id="cb9-309"><a href="#cb9-309" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929 !important;</span></span>
-<span id="cb9-310"><a href="#cb9-310" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #444 !important;</span></span>
-<span id="cb9-311"><a href="#cb9-311" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 7px !important;</span></span>
-<span id="cb9-312"><a href="#cb9-312" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 7px !important;</span></span>
-<span id="cb9-313"><a href="#cb9-313" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 2px 10px rgba(0,0,0,0.45) !important;</span></span>
-<span id="cb9-314"><a href="#cb9-314" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-315"><a href="#cb9-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-316"><a href="#cb9-316" aria-hidden="true" tabindex="-1"></a><span class="st">        #memorial-search-input {</span></span>
-<span id="cb9-317"><a href="#cb9-317" aria-hidden="true" tabindex="-1"></a><span class="st">          box-sizing: border-box;</span></span>
-<span id="cb9-318"><a href="#cb9-318" aria-hidden="true" tabindex="-1"></a><span class="st">          width: 100%;</span></span>
-<span id="cb9-319"><a href="#cb9-319" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 8px 10px;</span></span>
-<span id="cb9-320"><a href="#cb9-320" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #555;</span></span>
-<span id="cb9-321"><a href="#cb9-321" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 5px;</span></span>
-<span id="cb9-322"><a href="#cb9-322" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #1f1f1f;</span></span>
-<span id="cb9-323"><a href="#cb9-323" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee;</span></span>
-<span id="cb9-324"><a href="#cb9-324" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 13px;</span></span>
-<span id="cb9-325"><a href="#cb9-325" aria-hidden="true" tabindex="-1"></a><span class="st">          outline: none;</span></span>
-<span id="cb9-326"><a href="#cb9-326" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-327"><a href="#cb9-327" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-328"><a href="#cb9-328" aria-hidden="true" tabindex="-1"></a><span class="st">        #memorial-search-input::placeholder {color: #999;}</span></span>
-<span id="cb9-329"><a href="#cb9-329" aria-hidden="true" tabindex="-1"></a><span class="st">        #memorial-search-input:focus {border-color: #777;}</span></span>
+<span id="cb9-215"><a href="#cb9-215" aria-hidden="true" tabindex="-1"></a><span class="st">      var map = this;</span></span>
+<span id="cb9-216"><a href="#cb9-216" aria-hidden="true" tabindex="-1"></a><span class="st">      map.setMinZoom(10);</span></span>
+<span id="cb9-217"><a href="#cb9-217" aria-hidden="true" tabindex="-1"></a><span class="st">      </span></span>
+<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a><span class="st">      var control = el.querySelector('.leaflet-control-layers');</span></span>
+<span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a><span class="st">      if (control) {</span></span>
+<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a><span class="st">        control.style.marginTop = '60px';</span></span>
+<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a><span class="st">      }</span></span>
+<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a><span class="st">  "</span>)</span>
+<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a><span class="co"># Custom dark-mode UI</span></span>
+<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> map <span class="sc">%&gt;%</span></span>
+<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>  htmlwidgets<span class="sc">::</span><span class="fu">onRender</span>(<span class="st">"</span></span>
+<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a><span class="st">    function(el, x) {</span></span>
+<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a><span class="st">      var paths = el.querySelectorAll(</span></span>
+<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a><span class="st">        '.leaflet-overlay-pane path'</span></span>
+<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a><span class="st">      );</span></span>
+<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a><span class="st">      paths.forEach(function(path) {</span></span>
+<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a><span class="st">        path.style.strokeLinecap = 'round';</span></span>
+<span id="cb9-236"><a href="#cb9-236" aria-hidden="true" tabindex="-1"></a><span class="st">        path.style.strokeLinejoin = 'round';</span></span>
+<span id="cb9-237"><a href="#cb9-237" aria-hidden="true" tabindex="-1"></a><span class="st">      });</span></span>
+<span id="cb9-238"><a href="#cb9-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-239"><a href="#cb9-239" aria-hidden="true" tabindex="-1"></a><span class="st">      var map = this;</span></span>
+<span id="cb9-240"><a href="#cb9-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-241"><a href="#cb9-241" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
+<span id="cb9-242"><a href="#cb9-242" aria-hidden="true" tabindex="-1"></a><span class="st">         TWIN TOWERS</span></span>
+<span id="cb9-243"><a href="#cb9-243" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
+<span id="cb9-244"><a href="#cb9-244" aria-hidden="true" tabindex="-1"></a><span class="st">      </span></span>
+<span id="cb9-245"><a href="#cb9-245" aria-hidden="true" tabindex="-1"></a><span class="st">      var towerIcon = L.divIcon({</span></span>
+<span id="cb9-246"><a href="#cb9-246" aria-hidden="true" tabindex="-1"></a><span class="st">        className: 'twin-tower-icon',</span></span>
+<span id="cb9-247"><a href="#cb9-247" aria-hidden="true" tabindex="-1"></a><span class="st">        html:</span></span>
+<span id="cb9-248"><a href="#cb9-248" aria-hidden="true" tabindex="-1"></a><span class="st">          '&lt;div class=</span><span class="sc">\"</span><span class="st">tower-marker</span><span class="sc">\"</span><span class="st">&gt;' +</span></span>
+<span id="cb9-249"><a href="#cb9-249" aria-hidden="true" tabindex="-1"></a><span class="st">            '&lt;div class=</span><span class="sc">\"</span><span class="st">tower</span><span class="sc">\"</span><span class="st">&gt;&lt;/div&gt;' +</span></span>
+<span id="cb9-250"><a href="#cb9-250" aria-hidden="true" tabindex="-1"></a><span class="st">            '&lt;div class=</span><span class="sc">\"</span><span class="st">tower</span><span class="sc">\"</span><span class="st">&gt;&lt;/div&gt;' +</span></span>
+<span id="cb9-251"><a href="#cb9-251" aria-hidden="true" tabindex="-1"></a><span class="st">          '&lt;/div&gt;',</span></span>
+<span id="cb9-252"><a href="#cb9-252" aria-hidden="true" tabindex="-1"></a><span class="st">        iconSize: [30, 42],</span></span>
+<span id="cb9-253"><a href="#cb9-253" aria-hidden="true" tabindex="-1"></a><span class="st">        iconAnchor: [15, 42]</span></span>
+<span id="cb9-254"><a href="#cb9-254" aria-hidden="true" tabindex="-1"></a><span class="st">      });</span></span>
+<span id="cb9-255"><a href="#cb9-255" aria-hidden="true" tabindex="-1"></a><span class="st">      </span></span>
+<span id="cb9-256"><a href="#cb9-256" aria-hidden="true" tabindex="-1"></a><span class="st">      L.marker(</span></span>
+<span id="cb9-257"><a href="#cb9-257" aria-hidden="true" tabindex="-1"></a><span class="st">        [40.711592, -74.013211],</span></span>
+<span id="cb9-258"><a href="#cb9-258" aria-hidden="true" tabindex="-1"></a><span class="st">        {icon: towerIcon, interactive: false}</span></span>
+<span id="cb9-259"><a href="#cb9-259" aria-hidden="true" tabindex="-1"></a><span class="st">      ).addTo(map);</span></span>
+<span id="cb9-260"><a href="#cb9-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-261"><a href="#cb9-261" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
+<span id="cb9-262"><a href="#cb9-262" aria-hidden="true" tabindex="-1"></a><span class="st">         GLOBAL MAP UI</span></span>
+<span id="cb9-263"><a href="#cb9-263" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
+<span id="cb9-264"><a href="#cb9-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-265"><a href="#cb9-265" aria-hidden="true" tabindex="-1"></a><span class="st">      var style = document.createElement('style');</span></span>
+<span id="cb9-266"><a href="#cb9-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-267"><a href="#cb9-267" aria-hidden="true" tabindex="-1"></a><span class="st">      style.innerHTML = `</span></span>
+<span id="cb9-268"><a href="#cb9-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-269"><a href="#cb9-269" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
+<span id="cb9-270"><a href="#cb9-270" aria-hidden="true" tabindex="-1"></a><span class="st">           TWIN TOWERS</span></span>
+<span id="cb9-271"><a href="#cb9-271" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
+<span id="cb9-272"><a href="#cb9-272" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
+<span id="cb9-273"><a href="#cb9-273" aria-hidden="true" tabindex="-1"></a><span class="st">        .twin-tower-icon {</span></span>
+<span id="cb9-274"><a href="#cb9-274" aria-hidden="true" tabindex="-1"></a><span class="st">          background: transparent !important;</span></span>
+<span id="cb9-275"><a href="#cb9-275" aria-hidden="true" tabindex="-1"></a><span class="st">          border: none !important;</span></span>
+<span id="cb9-276"><a href="#cb9-276" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-277"><a href="#cb9-277" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
+<span id="cb9-278"><a href="#cb9-278" aria-hidden="true" tabindex="-1"></a><span class="st">        .tower-marker {</span></span>
+<span id="cb9-279"><a href="#cb9-279" aria-hidden="true" tabindex="-1"></a><span class="st">          display: flex;</span></span>
+<span id="cb9-280"><a href="#cb9-280" aria-hidden="true" tabindex="-1"></a><span class="st">          justify-content: center;</span></span>
+<span id="cb9-281"><a href="#cb9-281" aria-hidden="true" tabindex="-1"></a><span class="st">          align-items: flex-end;</span></span>
+<span id="cb9-282"><a href="#cb9-282" aria-hidden="true" tabindex="-1"></a><span class="st">          gap: 4px;</span></span>
+<span id="cb9-283"><a href="#cb9-283" aria-hidden="true" tabindex="-1"></a><span class="st">          width: 30px;</span></span>
+<span id="cb9-284"><a href="#cb9-284" aria-hidden="true" tabindex="-1"></a><span class="st">          height: 42px;</span></span>
+<span id="cb9-285"><a href="#cb9-285" aria-hidden="true" tabindex="-1"></a><span class="st">          opacity: 0.85;</span></span>
+<span id="cb9-286"><a href="#cb9-286" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-287"><a href="#cb9-287" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
+<span id="cb9-288"><a href="#cb9-288" aria-hidden="true" tabindex="-1"></a><span class="st">        .tower {</span></span>
+<span id="cb9-289"><a href="#cb9-289" aria-hidden="true" tabindex="-1"></a><span class="st">          width: 8px;</span></span>
+<span id="cb9-290"><a href="#cb9-290" aria-hidden="true" tabindex="-1"></a><span class="st">          height: 38px;</span></span>
+<span id="cb9-291"><a href="#cb9-291" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #eeeeee;</span></span>
+<span id="cb9-292"><a href="#cb9-292" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #777;</span></span>
+<span id="cb9-293"><a href="#cb9-293" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 1px 4px rgba(0,0,0,0.5);</span></span>
+<span id="cb9-294"><a href="#cb9-294" aria-hidden="true" tabindex="-1"></a><span class="st">          position: relative;</span></span>
+<span id="cb9-295"><a href="#cb9-295" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-296"><a href="#cb9-296" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
+<span id="cb9-297"><a href="#cb9-297" aria-hidden="true" tabindex="-1"></a><span class="st">        .tower:before {</span></span>
+<span id="cb9-298"><a href="#cb9-298" aria-hidden="true" tabindex="-1"></a><span class="st">          content: '';</span></span>
+<span id="cb9-299"><a href="#cb9-299" aria-hidden="true" tabindex="-1"></a><span class="st">          position: absolute;</span></span>
+<span id="cb9-300"><a href="#cb9-300" aria-hidden="true" tabindex="-1"></a><span class="st">          top: -4px;</span></span>
+<span id="cb9-301"><a href="#cb9-301" aria-hidden="true" tabindex="-1"></a><span class="st">          left: 1px;</span></span>
+<span id="cb9-302"><a href="#cb9-302" aria-hidden="true" tabindex="-1"></a><span class="st">          width: 4px;</span></span>
+<span id="cb9-303"><a href="#cb9-303" aria-hidden="true" tabindex="-1"></a><span class="st">          height: 4px;</span></span>
+<span id="cb9-304"><a href="#cb9-304" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #eeeeee;</span></span>
+<span id="cb9-305"><a href="#cb9-305" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-306"><a href="#cb9-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-307"><a href="#cb9-307" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
+<span id="cb9-308"><a href="#cb9-308" aria-hidden="true" tabindex="-1"></a><span class="st">           SEARCH BOX</span></span>
+<span id="cb9-309"><a href="#cb9-309" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
+<span id="cb9-310"><a href="#cb9-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-311"><a href="#cb9-311" aria-hidden="true" tabindex="-1"></a><span class="st">        .memorial-search {</span></span>
+<span id="cb9-312"><a href="#cb9-312" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929 !important;</span></span>
+<span id="cb9-313"><a href="#cb9-313" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #444 !important;</span></span>
+<span id="cb9-314"><a href="#cb9-314" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 7px !important;</span></span>
+<span id="cb9-315"><a href="#cb9-315" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 7px !important;</span></span>
+<span id="cb9-316"><a href="#cb9-316" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 2px 10px rgba(0,0,0,0.45) !important;</span></span>
+<span id="cb9-317"><a href="#cb9-317" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-318"><a href="#cb9-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-319"><a href="#cb9-319" aria-hidden="true" tabindex="-1"></a><span class="st">        #memorial-search-input {</span></span>
+<span id="cb9-320"><a href="#cb9-320" aria-hidden="true" tabindex="-1"></a><span class="st">          box-sizing: border-box;</span></span>
+<span id="cb9-321"><a href="#cb9-321" aria-hidden="true" tabindex="-1"></a><span class="st">          width: 100%;</span></span>
+<span id="cb9-322"><a href="#cb9-322" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 8px 10px;</span></span>
+<span id="cb9-323"><a href="#cb9-323" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #555;</span></span>
+<span id="cb9-324"><a href="#cb9-324" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 5px;</span></span>
+<span id="cb9-325"><a href="#cb9-325" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #1f1f1f;</span></span>
+<span id="cb9-326"><a href="#cb9-326" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee;</span></span>
+<span id="cb9-327"><a href="#cb9-327" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 13px;</span></span>
+<span id="cb9-328"><a href="#cb9-328" aria-hidden="true" tabindex="-1"></a><span class="st">          outline: none;</span></span>
+<span id="cb9-329"><a href="#cb9-329" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
 <span id="cb9-330"><a href="#cb9-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-331"><a href="#cb9-331" aria-hidden="true" tabindex="-1"></a><span class="st">        #memorial-search-results {</span></span>
-<span id="cb9-332"><a href="#cb9-332" aria-hidden="true" tabindex="-1"></a><span class="st">          max-height: 250px;</span></span>
-<span id="cb9-333"><a href="#cb9-333" aria-hidden="true" tabindex="-1"></a><span class="st">          overflow-y: auto;</span></span>
-<span id="cb9-334"><a href="#cb9-334" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-top: 4px;</span></span>
-<span id="cb9-335"><a href="#cb9-335" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 4px;</span></span>
-<span id="cb9-336"><a href="#cb9-336" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-337"><a href="#cb9-337" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-338"><a href="#cb9-338" aria-hidden="true" tabindex="-1"></a><span class="st">        .memorial-search-result {</span></span>
-<span id="cb9-339"><a href="#cb9-339" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 7px 9px;</span></span>
-<span id="cb9-340"><a href="#cb9-340" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #dddddd;</span></span>
-<span id="cb9-341"><a href="#cb9-341" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929;</span></span>
-<span id="cb9-342"><a href="#cb9-342" aria-hidden="true" tabindex="-1"></a><span class="st">          border-top: 1px solid #3d3d3d;</span></span>
-<span id="cb9-343"><a href="#cb9-343" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 12px;</span></span>
-<span id="cb9-344"><a href="#cb9-344" aria-hidden="true" tabindex="-1"></a><span class="st">          cursor: pointer;</span></span>
-<span id="cb9-345"><a href="#cb9-345" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-346"><a href="#cb9-346" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-347"><a href="#cb9-347" aria-hidden="true" tabindex="-1"></a><span class="st">        .memorial-search-result:hover {</span></span>
-<span id="cb9-348"><a href="#cb9-348" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #383838;</span></span>
-<span id="cb9-349"><a href="#cb9-349" aria-hidden="true" tabindex="-1"></a><span class="st">          color: white;</span></span>
-<span id="cb9-350"><a href="#cb9-350" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-351"><a href="#cb9-351" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-352"><a href="#cb9-352" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
-<span id="cb9-353"><a href="#cb9-353" aria-hidden="true" tabindex="-1"></a><span class="st">           LAYER CONTROL</span></span>
-<span id="cb9-354"><a href="#cb9-354" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
-<span id="cb9-355"><a href="#cb9-355" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-356"><a href="#cb9-356" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-control-layers {</span></span>
-<span id="cb9-357"><a href="#cb9-357" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929 !important;</span></span>
-<span id="cb9-358"><a href="#cb9-358" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee !important;</span></span>
-<span id="cb9-359"><a href="#cb9-359" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #444 !important;</span></span>
-<span id="cb9-360"><a href="#cb9-360" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 7px !important;</span></span>
-<span id="cb9-361"><a href="#cb9-361" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 2px 10px rgba(0,0,0,0.45) !important;</span></span>
-<span id="cb9-362"><a href="#cb9-362" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 9px 11px !important;</span></span>
-<span id="cb9-363"><a href="#cb9-363" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 12px !important;</span></span>
-<span id="cb9-364"><a href="#cb9-364" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-365"><a href="#cb9-365" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-366"><a href="#cb9-366" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-control-layers-list {color: #eeeeee !important;}</span></span>
-<span id="cb9-367"><a href="#cb9-367" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-control-layers label {color: #eeeeee !important;}</span></span>
-<span id="cb9-368"><a href="#cb9-368" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-control-layers-separator {border-top: 1px solid #444 !important;}</span></span>
-<span id="cb9-369"><a href="#cb9-369" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-370"><a href="#cb9-370" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
-<span id="cb9-371"><a href="#cb9-371" aria-hidden="true" tabindex="-1"></a><span class="st">           POPUPS</span></span>
-<span id="cb9-372"><a href="#cb9-372" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
-<span id="cb9-373"><a href="#cb9-373" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-374"><a href="#cb9-374" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-content-wrapper,</span></span>
-<span id="cb9-375"><a href="#cb9-375" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-tip {</span></span>
-<span id="cb9-376"><a href="#cb9-376" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929 !important;</span></span>
-<span id="cb9-377"><a href="#cb9-377" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee !important;</span></span>
-<span id="cb9-378"><a href="#cb9-378" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 3px 15px rgba(0,0,0,0.5) !important;</span></span>
-<span id="cb9-379"><a href="#cb9-379" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-380"><a href="#cb9-380" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-381"><a href="#cb9-381" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-content-wrapper {</span></span>
-<span id="cb9-382"><a href="#cb9-382" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #444;</span></span>
-<span id="cb9-383"><a href="#cb9-383" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 6px !important;</span></span>
-<span id="cb9-384"><a href="#cb9-384" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-385"><a href="#cb9-385" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-386"><a href="#cb9-386" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-tip {border: 1px solid #444;}</span></span>
-<span id="cb9-387"><a href="#cb9-387" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-content {margin: 10px 12px !important;}</span></span>
+<span id="cb9-331"><a href="#cb9-331" aria-hidden="true" tabindex="-1"></a><span class="st">        #memorial-search-input::placeholder {color: #999;}</span></span>
+<span id="cb9-332"><a href="#cb9-332" aria-hidden="true" tabindex="-1"></a><span class="st">        #memorial-search-input:focus {border-color: #777;}</span></span>
+<span id="cb9-333"><a href="#cb9-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-334"><a href="#cb9-334" aria-hidden="true" tabindex="-1"></a><span class="st">        #memorial-search-results {</span></span>
+<span id="cb9-335"><a href="#cb9-335" aria-hidden="true" tabindex="-1"></a><span class="st">          max-height: 250px;</span></span>
+<span id="cb9-336"><a href="#cb9-336" aria-hidden="true" tabindex="-1"></a><span class="st">          overflow-y: auto;</span></span>
+<span id="cb9-337"><a href="#cb9-337" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-top: 4px;</span></span>
+<span id="cb9-338"><a href="#cb9-338" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 4px;</span></span>
+<span id="cb9-339"><a href="#cb9-339" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-340"><a href="#cb9-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-341"><a href="#cb9-341" aria-hidden="true" tabindex="-1"></a><span class="st">        .memorial-search-result {</span></span>
+<span id="cb9-342"><a href="#cb9-342" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 7px 9px;</span></span>
+<span id="cb9-343"><a href="#cb9-343" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #dddddd;</span></span>
+<span id="cb9-344"><a href="#cb9-344" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929;</span></span>
+<span id="cb9-345"><a href="#cb9-345" aria-hidden="true" tabindex="-1"></a><span class="st">          border-top: 1px solid #3d3d3d;</span></span>
+<span id="cb9-346"><a href="#cb9-346" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 12px;</span></span>
+<span id="cb9-347"><a href="#cb9-347" aria-hidden="true" tabindex="-1"></a><span class="st">          cursor: pointer;</span></span>
+<span id="cb9-348"><a href="#cb9-348" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-349"><a href="#cb9-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-350"><a href="#cb9-350" aria-hidden="true" tabindex="-1"></a><span class="st">        .memorial-search-result:hover {</span></span>
+<span id="cb9-351"><a href="#cb9-351" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #383838;</span></span>
+<span id="cb9-352"><a href="#cb9-352" aria-hidden="true" tabindex="-1"></a><span class="st">          color: white;</span></span>
+<span id="cb9-353"><a href="#cb9-353" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-354"><a href="#cb9-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-355"><a href="#cb9-355" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
+<span id="cb9-356"><a href="#cb9-356" aria-hidden="true" tabindex="-1"></a><span class="st">           LAYER CONTROL</span></span>
+<span id="cb9-357"><a href="#cb9-357" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
+<span id="cb9-358"><a href="#cb9-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-359"><a href="#cb9-359" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-control-layers {</span></span>
+<span id="cb9-360"><a href="#cb9-360" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929 !important;</span></span>
+<span id="cb9-361"><a href="#cb9-361" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee !important;</span></span>
+<span id="cb9-362"><a href="#cb9-362" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #444 !important;</span></span>
+<span id="cb9-363"><a href="#cb9-363" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 7px !important;</span></span>
+<span id="cb9-364"><a href="#cb9-364" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 2px 10px rgba(0,0,0,0.45) !important;</span></span>
+<span id="cb9-365"><a href="#cb9-365" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 9px 11px !important;</span></span>
+<span id="cb9-366"><a href="#cb9-366" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 12px !important;</span></span>
+<span id="cb9-367"><a href="#cb9-367" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-368"><a href="#cb9-368" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-369"><a href="#cb9-369" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-control-layers-list {color: #eeeeee !important;}</span></span>
+<span id="cb9-370"><a href="#cb9-370" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-control-layers label {color: #eeeeee !important;}</span></span>
+<span id="cb9-371"><a href="#cb9-371" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-control-layers-separator {border-top: 1px solid #444 !important;}</span></span>
+<span id="cb9-372"><a href="#cb9-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-373"><a href="#cb9-373" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
+<span id="cb9-374"><a href="#cb9-374" aria-hidden="true" tabindex="-1"></a><span class="st">           POPUPS</span></span>
+<span id="cb9-375"><a href="#cb9-375" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
+<span id="cb9-376"><a href="#cb9-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-377"><a href="#cb9-377" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-content-wrapper,</span></span>
+<span id="cb9-378"><a href="#cb9-378" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-tip {</span></span>
+<span id="cb9-379"><a href="#cb9-379" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929 !important;</span></span>
+<span id="cb9-380"><a href="#cb9-380" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee !important;</span></span>
+<span id="cb9-381"><a href="#cb9-381" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 3px 15px rgba(0,0,0,0.5) !important;</span></span>
+<span id="cb9-382"><a href="#cb9-382" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-383"><a href="#cb9-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-384"><a href="#cb9-384" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-content-wrapper {</span></span>
+<span id="cb9-385"><a href="#cb9-385" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #444;</span></span>
+<span id="cb9-386"><a href="#cb9-386" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 6px !important;</span></span>
+<span id="cb9-387"><a href="#cb9-387" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
 <span id="cb9-388"><a href="#cb9-388" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-389"><a href="#cb9-389" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-close-button {</span></span>
-<span id="cb9-390"><a href="#cb9-390" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #aaaaaa !important;</span></span>
-<span id="cb9-391"><a href="#cb9-391" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 18px !important;</span></span>
-<span id="cb9-392"><a href="#cb9-392" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-393"><a href="#cb9-393" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-394"><a href="#cb9-394" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-close-button:hover {color: white !important;}</span></span>
-<span id="cb9-395"><a href="#cb9-395" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-396"><a href="#cb9-396" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
-<span id="cb9-397"><a href="#cb9-397" aria-hidden="true" tabindex="-1"></a><span class="st">           HOVER TOOLTIPS</span></span>
-<span id="cb9-398"><a href="#cb9-398" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
-<span id="cb9-399"><a href="#cb9-399" aria-hidden="true" tabindex="-1"></a><span class="st">      </span></span>
-<span id="cb9-400"><a href="#cb9-400" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip {</span></span>
-<span id="cb9-401"><a href="#cb9-401" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929 !important;</span></span>
-<span id="cb9-402"><a href="#cb9-402" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee !important;</span></span>
-<span id="cb9-403"><a href="#cb9-403" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #444 !important;</span></span>
-<span id="cb9-404"><a href="#cb9-404" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 5px !important;</span></span>
-<span id="cb9-405"><a href="#cb9-405" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;</span></span>
-<span id="cb9-406"><a href="#cb9-406" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 11px !important;</span></span>
-<span id="cb9-407"><a href="#cb9-407" aria-hidden="true" tabindex="-1"></a><span class="st">          font-weight: 500 !important;</span></span>
-<span id="cb9-408"><a href="#cb9-408" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 5px 7px !important;</span></span>
-<span id="cb9-409"><a href="#cb9-409" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-410"><a href="#cb9-410" aria-hidden="true" tabindex="-1"></a><span class="st">      </span></span>
-<span id="cb9-411"><a href="#cb9-411" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip-top:before {border-top-color: #292929 !important;}</span></span>
-<span id="cb9-412"><a href="#cb9-412" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip-bottom:before {border-bottom-color: #292929 !important;}</span></span>
-<span id="cb9-413"><a href="#cb9-413" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip-left:before {border-left-color: #292929 !important;}</span></span>
-<span id="cb9-414"><a href="#cb9-414" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip-right:before {border-right-color: #292929 !important;}</span></span>
-<span id="cb9-415"><a href="#cb9-415" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-416"><a href="#cb9-416" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
-<span id="cb9-417"><a href="#cb9-417" aria-hidden="true" tabindex="-1"></a><span class="st">           POPUP CONTENT</span></span>
-<span id="cb9-418"><a href="#cb9-418" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
-<span id="cb9-419"><a href="#cb9-419" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-420"><a href="#cb9-420" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-content {color: #dddddd;}</span></span>
-<span id="cb9-421"><a href="#cb9-421" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-422"><a href="#cb9-422" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-title {</span></span>
-<span id="cb9-423"><a href="#cb9-423" aria-hidden="true" tabindex="-1"></a><span class="st">          color: white;</span></span>
-<span id="cb9-424"><a href="#cb9-424" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 14px;</span></span>
-<span id="cb9-425"><a href="#cb9-425" aria-hidden="true" tabindex="-1"></a><span class="st">          font-weight: 600;</span></span>
-<span id="cb9-426"><a href="#cb9-426" aria-hidden="true" tabindex="-1"></a><span class="st">          line-height: 1.3;</span></span>
-<span id="cb9-427"><a href="#cb9-427" aria-hidden="true" tabindex="-1"></a><span class="st">          padding-bottom: 6px;</span></span>
-<span id="cb9-428"><a href="#cb9-428" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-bottom: 7px;</span></span>
-<span id="cb9-429"><a href="#cb9-429" aria-hidden="true" tabindex="-1"></a><span class="st">          border-bottom: 1px solid #444;</span></span>
-<span id="cb9-430"><a href="#cb9-430" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-431"><a href="#cb9-431" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-432"><a href="#cb9-432" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-field {</span></span>
-<span id="cb9-433"><a href="#cb9-433" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #cccccc;</span></span>
-<span id="cb9-434"><a href="#cb9-434" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 11px;</span></span>
-<span id="cb9-435"><a href="#cb9-435" aria-hidden="true" tabindex="-1"></a><span class="st">          line-height: 1.4;</span></span>
-<span id="cb9-436"><a href="#cb9-436" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-bottom: 4px;</span></span>
-<span id="cb9-437"><a href="#cb9-437" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-438"><a href="#cb9-438" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-439"><a href="#cb9-439" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-field strong {</span></span>
-<span id="cb9-440"><a href="#cb9-440" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee;</span></span>
-<span id="cb9-441"><a href="#cb9-441" aria-hidden="true" tabindex="-1"></a><span class="st">          font-weight: 600;</span></span>
-<span id="cb9-442"><a href="#cb9-442" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-443"><a href="#cb9-443" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-444"><a href="#cb9-444" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-info-title {</span></span>
-<span id="cb9-445"><a href="#cb9-445" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee;</span></span>
-<span id="cb9-446"><a href="#cb9-446" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 11px;</span></span>
-<span id="cb9-447"><a href="#cb9-447" aria-hidden="true" tabindex="-1"></a><span class="st">          font-weight: 600;</span></span>
-<span id="cb9-448"><a href="#cb9-448" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-top: 8px;</span></span>
-<span id="cb9-449"><a href="#cb9-449" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-bottom: 4px;</span></span>
-<span id="cb9-450"><a href="#cb9-450" aria-hidden="true" tabindex="-1"></a><span class="st">          padding-top: 7px;</span></span>
-<span id="cb9-451"><a href="#cb9-451" aria-hidden="true" tabindex="-1"></a><span class="st">          border-top: 1px solid #444;</span></span>
-<span id="cb9-452"><a href="#cb9-452" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-453"><a href="#cb9-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-454"><a href="#cb9-454" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-info {</span></span>
-<span id="cb9-455"><a href="#cb9-455" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #bbbbbb;</span></span>
-<span id="cb9-456"><a href="#cb9-456" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 11px;</span></span>
-<span id="cb9-457"><a href="#cb9-457" aria-hidden="true" tabindex="-1"></a><span class="st">          line-height: 1.4;</span></span>
-<span id="cb9-458"><a href="#cb9-458" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-459"><a href="#cb9-459" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-460"><a href="#cb9-460" aria-hidden="true" tabindex="-1"></a><span class="st">      `;</span></span>
-<span id="cb9-461"><a href="#cb9-461" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-462"><a href="#cb9-462" aria-hidden="true" tabindex="-1"></a><span class="st">      document.head.appendChild(style);</span></span>
-<span id="cb9-463"><a href="#cb9-463" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-464"><a href="#cb9-464" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
-<span id="cb9-465"><a href="#cb9-465" aria-hidden="true" tabindex="-1"></a><span class="st">         SEARCH CONTROL</span></span>
-<span id="cb9-466"><a href="#cb9-466" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
-<span id="cb9-467"><a href="#cb9-467" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-468"><a href="#cb9-468" aria-hidden="true" tabindex="-1"></a><span class="st">      var searchControl = L.control({position: 'topleft'});</span></span>
-<span id="cb9-469"><a href="#cb9-469" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-470"><a href="#cb9-470" aria-hidden="true" tabindex="-1"></a><span class="st">      searchControl.onAdd = function(map) {</span></span>
-<span id="cb9-471"><a href="#cb9-471" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-472"><a href="#cb9-472" aria-hidden="true" tabindex="-1"></a><span class="st">        var div = L.DomUtil.create(</span></span>
-<span id="cb9-473"><a href="#cb9-473" aria-hidden="true" tabindex="-1"></a><span class="st">          'div',</span></span>
-<span id="cb9-474"><a href="#cb9-474" aria-hidden="true" tabindex="-1"></a><span class="st">          'leaflet-control memorial-search'</span></span>
-<span id="cb9-475"><a href="#cb9-475" aria-hidden="true" tabindex="-1"></a><span class="st">        );</span></span>
-<span id="cb9-476"><a href="#cb9-476" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-477"><a href="#cb9-477" aria-hidden="true" tabindex="-1"></a><span class="st">        div.innerHTML =</span></span>
-<span id="cb9-478"><a href="#cb9-478" aria-hidden="true" tabindex="-1"></a><span class="st">          '&lt;input id=</span><span class="sc">\"</span><span class="st">memorial-search-input</span><span class="sc">\"</span><span class="st"> ' +</span></span>
-<span id="cb9-479"><a href="#cb9-479" aria-hidden="true" tabindex="-1"></a><span class="st">          'type=</span><span class="sc">\"</span><span class="st">text</span><span class="sc">\"</span><span class="st"> ' +</span></span>
-<span id="cb9-480"><a href="#cb9-480" aria-hidden="true" tabindex="-1"></a><span class="st">          'placeholder=</span><span class="sc">\"</span><span class="st">Search for a memorial</span><span class="sc">\"</span><span class="st"> ' +</span></span>
-<span id="cb9-481"><a href="#cb9-481" aria-hidden="true" tabindex="-1"></a><span class="st">          'autocomplete=</span><span class="sc">\"</span><span class="st">off</span><span class="sc">\"</span><span class="st">&gt;' +</span></span>
-<span id="cb9-482"><a href="#cb9-482" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-483"><a href="#cb9-483" aria-hidden="true" tabindex="-1"></a><span class="st">          '&lt;div id=</span><span class="sc">\"</span><span class="st">memorial-search-results</span><span class="sc">\"</span><span class="st">&gt;&lt;/div&gt;';</span></span>
-<span id="cb9-484"><a href="#cb9-484" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-485"><a href="#cb9-485" aria-hidden="true" tabindex="-1"></a><span class="st">        L.DomEvent.disableClickPropagation(div);</span></span>
-<span id="cb9-486"><a href="#cb9-486" aria-hidden="true" tabindex="-1"></a><span class="st">        L.DomEvent.disableScrollPropagation(div);</span></span>
+<span id="cb9-389"><a href="#cb9-389" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-tip {border: 1px solid #444;}</span></span>
+<span id="cb9-390"><a href="#cb9-390" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-content {margin: 10px 12px !important;}</span></span>
+<span id="cb9-391"><a href="#cb9-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-392"><a href="#cb9-392" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-close-button {</span></span>
+<span id="cb9-393"><a href="#cb9-393" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #aaaaaa !important;</span></span>
+<span id="cb9-394"><a href="#cb9-394" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 18px !important;</span></span>
+<span id="cb9-395"><a href="#cb9-395" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-396"><a href="#cb9-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-397"><a href="#cb9-397" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-popup-close-button:hover {color: white !important;}</span></span>
+<span id="cb9-398"><a href="#cb9-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-399"><a href="#cb9-399" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
+<span id="cb9-400"><a href="#cb9-400" aria-hidden="true" tabindex="-1"></a><span class="st">           HOVER TOOLTIPS</span></span>
+<span id="cb9-401"><a href="#cb9-401" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
+<span id="cb9-402"><a href="#cb9-402" aria-hidden="true" tabindex="-1"></a><span class="st">      </span></span>
+<span id="cb9-403"><a href="#cb9-403" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip {</span></span>
+<span id="cb9-404"><a href="#cb9-404" aria-hidden="true" tabindex="-1"></a><span class="st">          background: #292929 !important;</span></span>
+<span id="cb9-405"><a href="#cb9-405" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee !important;</span></span>
+<span id="cb9-406"><a href="#cb9-406" aria-hidden="true" tabindex="-1"></a><span class="st">          border: 1px solid #444 !important;</span></span>
+<span id="cb9-407"><a href="#cb9-407" aria-hidden="true" tabindex="-1"></a><span class="st">          border-radius: 5px !important;</span></span>
+<span id="cb9-408"><a href="#cb9-408" aria-hidden="true" tabindex="-1"></a><span class="st">          box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;</span></span>
+<span id="cb9-409"><a href="#cb9-409" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 11px !important;</span></span>
+<span id="cb9-410"><a href="#cb9-410" aria-hidden="true" tabindex="-1"></a><span class="st">          font-weight: 500 !important;</span></span>
+<span id="cb9-411"><a href="#cb9-411" aria-hidden="true" tabindex="-1"></a><span class="st">          padding: 5px 7px !important;</span></span>
+<span id="cb9-412"><a href="#cb9-412" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-413"><a href="#cb9-413" aria-hidden="true" tabindex="-1"></a><span class="st">      </span></span>
+<span id="cb9-414"><a href="#cb9-414" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip-top:before {border-top-color: #292929 !important;}</span></span>
+<span id="cb9-415"><a href="#cb9-415" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip-bottom:before {border-bottom-color: #292929 !important;}</span></span>
+<span id="cb9-416"><a href="#cb9-416" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip-left:before {border-left-color: #292929 !important;}</span></span>
+<span id="cb9-417"><a href="#cb9-417" aria-hidden="true" tabindex="-1"></a><span class="st">        .leaflet-tooltip-right:before {border-right-color: #292929 !important;}</span></span>
+<span id="cb9-418"><a href="#cb9-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-419"><a href="#cb9-419" aria-hidden="true" tabindex="-1"></a><span class="st">        /* -----------------------------------------</span></span>
+<span id="cb9-420"><a href="#cb9-420" aria-hidden="true" tabindex="-1"></a><span class="st">           POPUP CONTENT</span></span>
+<span id="cb9-421"><a href="#cb9-421" aria-hidden="true" tabindex="-1"></a><span class="st">           ----------------------------------------- */</span></span>
+<span id="cb9-422"><a href="#cb9-422" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-423"><a href="#cb9-423" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-content {color: #dddddd;}</span></span>
+<span id="cb9-424"><a href="#cb9-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-425"><a href="#cb9-425" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-title {</span></span>
+<span id="cb9-426"><a href="#cb9-426" aria-hidden="true" tabindex="-1"></a><span class="st">          color: white;</span></span>
+<span id="cb9-427"><a href="#cb9-427" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 14px;</span></span>
+<span id="cb9-428"><a href="#cb9-428" aria-hidden="true" tabindex="-1"></a><span class="st">          font-weight: 600;</span></span>
+<span id="cb9-429"><a href="#cb9-429" aria-hidden="true" tabindex="-1"></a><span class="st">          line-height: 1.3;</span></span>
+<span id="cb9-430"><a href="#cb9-430" aria-hidden="true" tabindex="-1"></a><span class="st">          padding-bottom: 6px;</span></span>
+<span id="cb9-431"><a href="#cb9-431" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-bottom: 7px;</span></span>
+<span id="cb9-432"><a href="#cb9-432" aria-hidden="true" tabindex="-1"></a><span class="st">          border-bottom: 1px solid #444;</span></span>
+<span id="cb9-433"><a href="#cb9-433" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-434"><a href="#cb9-434" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-435"><a href="#cb9-435" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-field {</span></span>
+<span id="cb9-436"><a href="#cb9-436" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #cccccc;</span></span>
+<span id="cb9-437"><a href="#cb9-437" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 11px;</span></span>
+<span id="cb9-438"><a href="#cb9-438" aria-hidden="true" tabindex="-1"></a><span class="st">          line-height: 1.4;</span></span>
+<span id="cb9-439"><a href="#cb9-439" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-bottom: 4px;</span></span>
+<span id="cb9-440"><a href="#cb9-440" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-441"><a href="#cb9-441" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-442"><a href="#cb9-442" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-field strong {</span></span>
+<span id="cb9-443"><a href="#cb9-443" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee;</span></span>
+<span id="cb9-444"><a href="#cb9-444" aria-hidden="true" tabindex="-1"></a><span class="st">          font-weight: 600;</span></span>
+<span id="cb9-445"><a href="#cb9-445" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-446"><a href="#cb9-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-447"><a href="#cb9-447" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-info-title {</span></span>
+<span id="cb9-448"><a href="#cb9-448" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #eeeeee;</span></span>
+<span id="cb9-449"><a href="#cb9-449" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 11px;</span></span>
+<span id="cb9-450"><a href="#cb9-450" aria-hidden="true" tabindex="-1"></a><span class="st">          font-weight: 600;</span></span>
+<span id="cb9-451"><a href="#cb9-451" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-top: 8px;</span></span>
+<span id="cb9-452"><a href="#cb9-452" aria-hidden="true" tabindex="-1"></a><span class="st">          margin-bottom: 4px;</span></span>
+<span id="cb9-453"><a href="#cb9-453" aria-hidden="true" tabindex="-1"></a><span class="st">          padding-top: 7px;</span></span>
+<span id="cb9-454"><a href="#cb9-454" aria-hidden="true" tabindex="-1"></a><span class="st">          border-top: 1px solid #444;</span></span>
+<span id="cb9-455"><a href="#cb9-455" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-456"><a href="#cb9-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-457"><a href="#cb9-457" aria-hidden="true" tabindex="-1"></a><span class="st">        .dark-popup-info {</span></span>
+<span id="cb9-458"><a href="#cb9-458" aria-hidden="true" tabindex="-1"></a><span class="st">          color: #bbbbbb;</span></span>
+<span id="cb9-459"><a href="#cb9-459" aria-hidden="true" tabindex="-1"></a><span class="st">          font-size: 11px;</span></span>
+<span id="cb9-460"><a href="#cb9-460" aria-hidden="true" tabindex="-1"></a><span class="st">          line-height: 1.4;</span></span>
+<span id="cb9-461"><a href="#cb9-461" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-462"><a href="#cb9-462" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-463"><a href="#cb9-463" aria-hidden="true" tabindex="-1"></a><span class="st">      `;</span></span>
+<span id="cb9-464"><a href="#cb9-464" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-465"><a href="#cb9-465" aria-hidden="true" tabindex="-1"></a><span class="st">      document.head.appendChild(style);</span></span>
+<span id="cb9-466"><a href="#cb9-466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-467"><a href="#cb9-467" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
+<span id="cb9-468"><a href="#cb9-468" aria-hidden="true" tabindex="-1"></a><span class="st">         SEARCH CONTROL</span></span>
+<span id="cb9-469"><a href="#cb9-469" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
+<span id="cb9-470"><a href="#cb9-470" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-471"><a href="#cb9-471" aria-hidden="true" tabindex="-1"></a><span class="st">      var searchControl = L.control({position: 'topleft'});</span></span>
+<span id="cb9-472"><a href="#cb9-472" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-473"><a href="#cb9-473" aria-hidden="true" tabindex="-1"></a><span class="st">      searchControl.onAdd = function(map) {</span></span>
+<span id="cb9-474"><a href="#cb9-474" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-475"><a href="#cb9-475" aria-hidden="true" tabindex="-1"></a><span class="st">        var div = L.DomUtil.create(</span></span>
+<span id="cb9-476"><a href="#cb9-476" aria-hidden="true" tabindex="-1"></a><span class="st">          'div',</span></span>
+<span id="cb9-477"><a href="#cb9-477" aria-hidden="true" tabindex="-1"></a><span class="st">          'leaflet-control memorial-search'</span></span>
+<span id="cb9-478"><a href="#cb9-478" aria-hidden="true" tabindex="-1"></a><span class="st">        );</span></span>
+<span id="cb9-479"><a href="#cb9-479" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-480"><a href="#cb9-480" aria-hidden="true" tabindex="-1"></a><span class="st">        div.innerHTML =</span></span>
+<span id="cb9-481"><a href="#cb9-481" aria-hidden="true" tabindex="-1"></a><span class="st">          '&lt;input id=</span><span class="sc">\"</span><span class="st">memorial-search-input</span><span class="sc">\"</span><span class="st"> ' +</span></span>
+<span id="cb9-482"><a href="#cb9-482" aria-hidden="true" tabindex="-1"></a><span class="st">          'type=</span><span class="sc">\"</span><span class="st">text</span><span class="sc">\"</span><span class="st"> ' +</span></span>
+<span id="cb9-483"><a href="#cb9-483" aria-hidden="true" tabindex="-1"></a><span class="st">          'placeholder=</span><span class="sc">\"</span><span class="st">Search for a memorial</span><span class="sc">\"</span><span class="st"> ' +</span></span>
+<span id="cb9-484"><a href="#cb9-484" aria-hidden="true" tabindex="-1"></a><span class="st">          'autocomplete=</span><span class="sc">\"</span><span class="st">off</span><span class="sc">\"</span><span class="st">&gt;' +</span></span>
+<span id="cb9-485"><a href="#cb9-485" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-486"><a href="#cb9-486" aria-hidden="true" tabindex="-1"></a><span class="st">          '&lt;div id=</span><span class="sc">\"</span><span class="st">memorial-search-results</span><span class="sc">\"</span><span class="st">&gt;&lt;/div&gt;';</span></span>
 <span id="cb9-487"><a href="#cb9-487" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-488"><a href="#cb9-488" aria-hidden="true" tabindex="-1"></a><span class="st">        return div;</span></span>
-<span id="cb9-489"><a href="#cb9-489" aria-hidden="true" tabindex="-1"></a><span class="st">      };</span></span>
+<span id="cb9-488"><a href="#cb9-488" aria-hidden="true" tabindex="-1"></a><span class="st">        L.DomEvent.disableClickPropagation(div);</span></span>
+<span id="cb9-489"><a href="#cb9-489" aria-hidden="true" tabindex="-1"></a><span class="st">        L.DomEvent.disableScrollPropagation(div);</span></span>
 <span id="cb9-490"><a href="#cb9-490" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-491"><a href="#cb9-491" aria-hidden="true" tabindex="-1"></a><span class="st">      searchControl.addTo(map);</span></span>
-<span id="cb9-492"><a href="#cb9-492" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-493"><a href="#cb9-493" aria-hidden="true" tabindex="-1"></a><span class="st">      var input = document.getElementById('memorial-search-input');</span></span>
-<span id="cb9-494"><a href="#cb9-494" aria-hidden="true" tabindex="-1"></a><span class="st">      var results = document.getElementById('memorial-search-results');</span></span>
+<span id="cb9-491"><a href="#cb9-491" aria-hidden="true" tabindex="-1"></a><span class="st">        return div;</span></span>
+<span id="cb9-492"><a href="#cb9-492" aria-hidden="true" tabindex="-1"></a><span class="st">      };</span></span>
+<span id="cb9-493"><a href="#cb9-493" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-494"><a href="#cb9-494" aria-hidden="true" tabindex="-1"></a><span class="st">      searchControl.addTo(map);</span></span>
 <span id="cb9-495"><a href="#cb9-495" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-496"><a href="#cb9-496" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
-<span id="cb9-497"><a href="#cb9-497" aria-hidden="true" tabindex="-1"></a><span class="st">         SEARCH</span></span>
-<span id="cb9-498"><a href="#cb9-498" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
-<span id="cb9-499"><a href="#cb9-499" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-500"><a href="#cb9-500" aria-hidden="true" tabindex="-1"></a><span class="st">      input.addEventListener('input', function() {</span></span>
-<span id="cb9-501"><a href="#cb9-501" aria-hidden="true" tabindex="-1"></a><span class="st">        var query = input.value.toLowerCase().trim();</span></span>
-<span id="cb9-502"><a href="#cb9-502" aria-hidden="true" tabindex="-1"></a><span class="st">        results.innerHTML = '';</span></span>
-<span id="cb9-503"><a href="#cb9-503" aria-hidden="true" tabindex="-1"></a><span class="st">        if (query.length === 0) return;</span></span>
-<span id="cb9-504"><a href="#cb9-504" aria-hidden="true" tabindex="-1"></a><span class="st">        var matches = [];</span></span>
-<span id="cb9-505"><a href="#cb9-505" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
-<span id="cb9-506"><a href="#cb9-506" aria-hidden="true" tabindex="-1"></a><span class="st">        map.eachLayer(function(layer) {</span></span>
-<span id="cb9-507"><a href="#cb9-507" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-508"><a href="#cb9-508" aria-hidden="true" tabindex="-1"></a><span class="st">          if (!map.hasLayer(layer)) return;</span></span>
-<span id="cb9-509"><a href="#cb9-509" aria-hidden="true" tabindex="-1"></a><span class="st">          if (!layer.options || !layer.options.label) return;</span></span>
+<span id="cb9-496"><a href="#cb9-496" aria-hidden="true" tabindex="-1"></a><span class="st">      var input = document.getElementById('memorial-search-input');</span></span>
+<span id="cb9-497"><a href="#cb9-497" aria-hidden="true" tabindex="-1"></a><span class="st">      var results = document.getElementById('memorial-search-results');</span></span>
+<span id="cb9-498"><a href="#cb9-498" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-499"><a href="#cb9-499" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
+<span id="cb9-500"><a href="#cb9-500" aria-hidden="true" tabindex="-1"></a><span class="st">         SEARCH</span></span>
+<span id="cb9-501"><a href="#cb9-501" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
+<span id="cb9-502"><a href="#cb9-502" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-503"><a href="#cb9-503" aria-hidden="true" tabindex="-1"></a><span class="st">      input.addEventListener('input', function() {</span></span>
+<span id="cb9-504"><a href="#cb9-504" aria-hidden="true" tabindex="-1"></a><span class="st">        var query = input.value.toLowerCase().trim();</span></span>
+<span id="cb9-505"><a href="#cb9-505" aria-hidden="true" tabindex="-1"></a><span class="st">        results.innerHTML = '';</span></span>
+<span id="cb9-506"><a href="#cb9-506" aria-hidden="true" tabindex="-1"></a><span class="st">        if (query.length === 0) return;</span></span>
+<span id="cb9-507"><a href="#cb9-507" aria-hidden="true" tabindex="-1"></a><span class="st">        var matches = [];</span></span>
+<span id="cb9-508"><a href="#cb9-508" aria-hidden="true" tabindex="-1"></a><span class="st">        </span></span>
+<span id="cb9-509"><a href="#cb9-509" aria-hidden="true" tabindex="-1"></a><span class="st">        map.eachLayer(function(layer) {</span></span>
 <span id="cb9-510"><a href="#cb9-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-511"><a href="#cb9-511" aria-hidden="true" tabindex="-1"></a><span class="st">          var name = layer.options.label;</span></span>
-<span id="cb9-512"><a href="#cb9-512" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-513"><a href="#cb9-513" aria-hidden="true" tabindex="-1"></a><span class="st">          if (typeof name !== 'string') {</span></span>
-<span id="cb9-514"><a href="#cb9-514" aria-hidden="true" tabindex="-1"></a><span class="st">            if (name &amp;&amp; name.options &amp;&amp; name.options.content) {</span></span>
-<span id="cb9-515"><a href="#cb9-515" aria-hidden="true" tabindex="-1"></a><span class="st">              name = name.options.content;</span></span>
-<span id="cb9-516"><a href="#cb9-516" aria-hidden="true" tabindex="-1"></a><span class="st">            } else {</span></span>
-<span id="cb9-517"><a href="#cb9-517" aria-hidden="true" tabindex="-1"></a><span class="st">              return;</span></span>
-<span id="cb9-518"><a href="#cb9-518" aria-hidden="true" tabindex="-1"></a><span class="st">            }</span></span>
-<span id="cb9-519"><a href="#cb9-519" aria-hidden="true" tabindex="-1"></a><span class="st">          }</span></span>
-<span id="cb9-520"><a href="#cb9-520" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-521"><a href="#cb9-521" aria-hidden="true" tabindex="-1"></a><span class="st">          name = String(name);</span></span>
-<span id="cb9-522"><a href="#cb9-522" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-523"><a href="#cb9-523" aria-hidden="true" tabindex="-1"></a><span class="st">          if (name.toLowerCase().includes(query)) {</span></span>
-<span id="cb9-524"><a href="#cb9-524" aria-hidden="true" tabindex="-1"></a><span class="st">            matches.push({</span></span>
-<span id="cb9-525"><a href="#cb9-525" aria-hidden="true" tabindex="-1"></a><span class="st">              name: name,</span></span>
-<span id="cb9-526"><a href="#cb9-526" aria-hidden="true" tabindex="-1"></a><span class="st">              layer: layer</span></span>
-<span id="cb9-527"><a href="#cb9-527" aria-hidden="true" tabindex="-1"></a><span class="st">            });</span></span>
-<span id="cb9-528"><a href="#cb9-528" aria-hidden="true" tabindex="-1"></a><span class="st">          }</span></span>
-<span id="cb9-529"><a href="#cb9-529" aria-hidden="true" tabindex="-1"></a><span class="st">        });</span></span>
-<span id="cb9-530"><a href="#cb9-530" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-531"><a href="#cb9-531" aria-hidden="true" tabindex="-1"></a><span class="st">        if (matches.length === 0) {</span></span>
-<span id="cb9-532"><a href="#cb9-532" aria-hidden="true" tabindex="-1"></a><span class="st">          results.innerHTML =</span></span>
-<span id="cb9-533"><a href="#cb9-533" aria-hidden="true" tabindex="-1"></a><span class="st">            '&lt;div class=</span><span class="sc">\"</span><span class="st">memorial-search-result</span><span class="sc">\"</span><span class="st"> ' +</span></span>
-<span id="cb9-534"><a href="#cb9-534" aria-hidden="true" tabindex="-1"></a><span class="st">            'style=</span><span class="sc">\"</span><span class="st">cursor:default;color:#888;</span><span class="sc">\"</span><span class="st">&gt;' +</span></span>
-<span id="cb9-535"><a href="#cb9-535" aria-hidden="true" tabindex="-1"></a><span class="st">            'No memorials found' +</span></span>
-<span id="cb9-536"><a href="#cb9-536" aria-hidden="true" tabindex="-1"></a><span class="st">            '&lt;/div&gt;';</span></span>
-<span id="cb9-537"><a href="#cb9-537" aria-hidden="true" tabindex="-1"></a><span class="st">          return;</span></span>
-<span id="cb9-538"><a href="#cb9-538" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
-<span id="cb9-539"><a href="#cb9-539" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-540"><a href="#cb9-540" aria-hidden="true" tabindex="-1"></a><span class="st">        matches.forEach(function(match) {</span></span>
-<span id="cb9-541"><a href="#cb9-541" aria-hidden="true" tabindex="-1"></a><span class="st">          var item = document.createElement('div');</span></span>
-<span id="cb9-542"><a href="#cb9-542" aria-hidden="true" tabindex="-1"></a><span class="st">          item.className = 'memorial-search-result';</span></span>
-<span id="cb9-543"><a href="#cb9-543" aria-hidden="true" tabindex="-1"></a><span class="st">          item.textContent = match.name;</span></span>
-<span id="cb9-544"><a href="#cb9-544" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-545"><a href="#cb9-545" aria-hidden="true" tabindex="-1"></a><span class="st">          item.addEventListener(</span></span>
-<span id="cb9-546"><a href="#cb9-546" aria-hidden="true" tabindex="-1"></a><span class="st">            'click',</span></span>
-<span id="cb9-547"><a href="#cb9-547" aria-hidden="true" tabindex="-1"></a><span class="st">            function() {</span></span>
-<span id="cb9-548"><a href="#cb9-548" aria-hidden="true" tabindex="-1"></a><span class="st">              var layer = match.layer;</span></span>
-<span id="cb9-549"><a href="#cb9-549" aria-hidden="true" tabindex="-1"></a><span class="st">              if (layer.getBounds) {</span></span>
-<span id="cb9-550"><a href="#cb9-550" aria-hidden="true" tabindex="-1"></a><span class="st">                var bounds = layer.getBounds();</span></span>
-<span id="cb9-551"><a href="#cb9-551" aria-hidden="true" tabindex="-1"></a><span class="st">                if (bounds.isValid()) {</span></span>
-<span id="cb9-552"><a href="#cb9-552" aria-hidden="true" tabindex="-1"></a><span class="st">                  map.fitBounds(bounds, {padding: [40, 40]});</span></span>
-<span id="cb9-553"><a href="#cb9-553" aria-hidden="true" tabindex="-1"></a><span class="st">                }</span></span>
-<span id="cb9-554"><a href="#cb9-554" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-555"><a href="#cb9-555" aria-hidden="true" tabindex="-1"></a><span class="st">              } else if (layer.getLatLng) {</span></span>
-<span id="cb9-556"><a href="#cb9-556" aria-hidden="true" tabindex="-1"></a><span class="st">                map.setView(layer.getLatLng(), 17);</span></span>
-<span id="cb9-557"><a href="#cb9-557" aria-hidden="true" tabindex="-1"></a><span class="st">              }</span></span>
-<span id="cb9-558"><a href="#cb9-558" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-559"><a href="#cb9-559" aria-hidden="true" tabindex="-1"></a><span class="st">              if (layer.openPopup) {</span></span>
-<span id="cb9-560"><a href="#cb9-560" aria-hidden="true" tabindex="-1"></a><span class="st">                layer.openPopup();</span></span>
-<span id="cb9-561"><a href="#cb9-561" aria-hidden="true" tabindex="-1"></a><span class="st">              }</span></span>
-<span id="cb9-562"><a href="#cb9-562" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-563"><a href="#cb9-563" aria-hidden="true" tabindex="-1"></a><span class="st">              results.innerHTML = '';</span></span>
-<span id="cb9-564"><a href="#cb9-564" aria-hidden="true" tabindex="-1"></a><span class="st">            }</span></span>
-<span id="cb9-565"><a href="#cb9-565" aria-hidden="true" tabindex="-1"></a><span class="st">          );</span></span>
-<span id="cb9-566"><a href="#cb9-566" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-567"><a href="#cb9-567" aria-hidden="true" tabindex="-1"></a><span class="st">          results.appendChild(item);</span></span>
-<span id="cb9-568"><a href="#cb9-568" aria-hidden="true" tabindex="-1"></a><span class="st">        });</span></span>
-<span id="cb9-569"><a href="#cb9-569" aria-hidden="true" tabindex="-1"></a><span class="st">      });</span></span>
-<span id="cb9-570"><a href="#cb9-570" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-571"><a href="#cb9-571" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
-<span id="cb9-572"><a href="#cb9-572" aria-hidden="true" tabindex="-1"></a><span class="st">         STYLE LEGEND</span></span>
-<span id="cb9-573"><a href="#cb9-573" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
-<span id="cb9-574"><a href="#cb9-574" aria-hidden="true" tabindex="-1"></a><span class="st">      var colors = {</span></span>
-<span id="cb9-575"><a href="#cb9-575" aria-hidden="true" tabindex="-1"></a><span class="st">        'FDNY/EMS': 'red',</span></span>
-<span id="cb9-576"><a href="#cb9-576" aria-hidden="true" tabindex="-1"></a><span class="st">        'Police': 'blue',</span></span>
-<span id="cb9-577"><a href="#cb9-577" aria-hidden="true" tabindex="-1"></a><span class="st">        'First Responder': 'purple',</span></span>
-<span id="cb9-578"><a href="#cb9-578" aria-hidden="true" tabindex="-1"></a><span class="st">        'Volunteer': 'green',</span></span>
-<span id="cb9-579"><a href="#cb9-579" aria-hidden="true" tabindex="-1"></a><span class="st">        'Civilian Casualty': 'white',</span></span>
-<span id="cb9-580"><a href="#cb9-580" aria-hidden="true" tabindex="-1"></a><span class="st">        'Community': 'yellow',</span></span>
-<span id="cb9-581"><a href="#cb9-581" aria-hidden="true" tabindex="-1"></a><span class="st">        'Other Memorial': 'black'</span></span>
-<span id="cb9-582"><a href="#cb9-582" aria-hidden="true" tabindex="-1"></a><span class="st">      };</span></span>
-<span id="cb9-583"><a href="#cb9-583" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-584"><a href="#cb9-584" aria-hidden="true" tabindex="-1"></a><span class="st">      var control = el.querySelector('.leaflet-control-layers');</span></span>
-<span id="cb9-585"><a href="#cb9-585" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-586"><a href="#cb9-586" aria-hidden="true" tabindex="-1"></a><span class="st">      if (control) {</span></span>
-<span id="cb9-587"><a href="#cb9-587" aria-hidden="true" tabindex="-1"></a><span class="st">        var heading = document.createElement('div');</span></span>
-<span id="cb9-588"><a href="#cb9-588" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.innerHTML = 'Filter by memorial type';</span></span>
-<span id="cb9-589"><a href="#cb9-589" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-590"><a href="#cb9-590" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.fontWeight = '600';</span></span>
-<span id="cb9-591"><a href="#cb9-591" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.fontSize = '12px';</span></span>
-<span id="cb9-592"><a href="#cb9-592" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.color = '#eeeeee';</span></span>
-<span id="cb9-593"><a href="#cb9-593" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.marginBottom = '5px';</span></span>
-<span id="cb9-594"><a href="#cb9-594" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.paddingBottom = '5px';</span></span>
-<span id="cb9-595"><a href="#cb9-595" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.borderBottom =</span></span>
-<span id="cb9-596"><a href="#cb9-596" aria-hidden="true" tabindex="-1"></a><span class="st">          '1px solid #444';</span></span>
-<span id="cb9-597"><a href="#cb9-597" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-598"><a href="#cb9-598" aria-hidden="true" tabindex="-1"></a><span class="st">        control.insertBefore(heading, control.querySelector('.leaflet-control-layers-list'));</span></span>
-<span id="cb9-599"><a href="#cb9-599" aria-hidden="true" tabindex="-1"></a><span class="st">        var labels = control.querySelectorAll('.leaflet-control-layers-overlays label');</span></span>
-<span id="cb9-600"><a href="#cb9-600" aria-hidden="true" tabindex="-1"></a><span class="st">        labels.forEach(function(label) {</span></span>
-<span id="cb9-601"><a href="#cb9-601" aria-hidden="true" tabindex="-1"></a><span class="st">          var text = label.textContent.trim();</span></span>
-<span id="cb9-602"><a href="#cb9-602" aria-hidden="true" tabindex="-1"></a><span class="st">          var color = colors[text];</span></span>
-<span id="cb9-603"><a href="#cb9-603" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-604"><a href="#cb9-604" aria-hidden="true" tabindex="-1"></a><span class="st">          if (!color) return;</span></span>
-<span id="cb9-605"><a href="#cb9-605" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-606"><a href="#cb9-606" aria-hidden="true" tabindex="-1"></a><span class="st">          var dot = document.createElement('span');</span></span>
-<span id="cb9-607"><a href="#cb9-607" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.display = 'inline-block';</span></span>
+<span id="cb9-511"><a href="#cb9-511" aria-hidden="true" tabindex="-1"></a><span class="st">          if (!map.hasLayer(layer)) return;</span></span>
+<span id="cb9-512"><a href="#cb9-512" aria-hidden="true" tabindex="-1"></a><span class="st">          if (!layer.options || !layer.options.label) return;</span></span>
+<span id="cb9-513"><a href="#cb9-513" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-514"><a href="#cb9-514" aria-hidden="true" tabindex="-1"></a><span class="st">          var name = layer.options.label;</span></span>
+<span id="cb9-515"><a href="#cb9-515" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-516"><a href="#cb9-516" aria-hidden="true" tabindex="-1"></a><span class="st">          if (typeof name !== 'string') {</span></span>
+<span id="cb9-517"><a href="#cb9-517" aria-hidden="true" tabindex="-1"></a><span class="st">            if (name &amp;&amp; name.options &amp;&amp; name.options.content) {</span></span>
+<span id="cb9-518"><a href="#cb9-518" aria-hidden="true" tabindex="-1"></a><span class="st">              name = name.options.content;</span></span>
+<span id="cb9-519"><a href="#cb9-519" aria-hidden="true" tabindex="-1"></a><span class="st">            } else {</span></span>
+<span id="cb9-520"><a href="#cb9-520" aria-hidden="true" tabindex="-1"></a><span class="st">              return;</span></span>
+<span id="cb9-521"><a href="#cb9-521" aria-hidden="true" tabindex="-1"></a><span class="st">            }</span></span>
+<span id="cb9-522"><a href="#cb9-522" aria-hidden="true" tabindex="-1"></a><span class="st">          }</span></span>
+<span id="cb9-523"><a href="#cb9-523" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-524"><a href="#cb9-524" aria-hidden="true" tabindex="-1"></a><span class="st">          name = String(name);</span></span>
+<span id="cb9-525"><a href="#cb9-525" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-526"><a href="#cb9-526" aria-hidden="true" tabindex="-1"></a><span class="st">          if (name.toLowerCase().includes(query)) {</span></span>
+<span id="cb9-527"><a href="#cb9-527" aria-hidden="true" tabindex="-1"></a><span class="st">            matches.push({</span></span>
+<span id="cb9-528"><a href="#cb9-528" aria-hidden="true" tabindex="-1"></a><span class="st">              name: name,</span></span>
+<span id="cb9-529"><a href="#cb9-529" aria-hidden="true" tabindex="-1"></a><span class="st">              layer: layer</span></span>
+<span id="cb9-530"><a href="#cb9-530" aria-hidden="true" tabindex="-1"></a><span class="st">            });</span></span>
+<span id="cb9-531"><a href="#cb9-531" aria-hidden="true" tabindex="-1"></a><span class="st">          }</span></span>
+<span id="cb9-532"><a href="#cb9-532" aria-hidden="true" tabindex="-1"></a><span class="st">        });</span></span>
+<span id="cb9-533"><a href="#cb9-533" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-534"><a href="#cb9-534" aria-hidden="true" tabindex="-1"></a><span class="st">        if (matches.length === 0) {</span></span>
+<span id="cb9-535"><a href="#cb9-535" aria-hidden="true" tabindex="-1"></a><span class="st">          results.innerHTML =</span></span>
+<span id="cb9-536"><a href="#cb9-536" aria-hidden="true" tabindex="-1"></a><span class="st">            '&lt;div class=</span><span class="sc">\"</span><span class="st">memorial-search-result</span><span class="sc">\"</span><span class="st"> ' +</span></span>
+<span id="cb9-537"><a href="#cb9-537" aria-hidden="true" tabindex="-1"></a><span class="st">            'style=</span><span class="sc">\"</span><span class="st">cursor:default;color:#888;</span><span class="sc">\"</span><span class="st">&gt;' +</span></span>
+<span id="cb9-538"><a href="#cb9-538" aria-hidden="true" tabindex="-1"></a><span class="st">            'No memorials found' +</span></span>
+<span id="cb9-539"><a href="#cb9-539" aria-hidden="true" tabindex="-1"></a><span class="st">            '&lt;/div&gt;';</span></span>
+<span id="cb9-540"><a href="#cb9-540" aria-hidden="true" tabindex="-1"></a><span class="st">          return;</span></span>
+<span id="cb9-541"><a href="#cb9-541" aria-hidden="true" tabindex="-1"></a><span class="st">        }</span></span>
+<span id="cb9-542"><a href="#cb9-542" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-543"><a href="#cb9-543" aria-hidden="true" tabindex="-1"></a><span class="st">        matches.forEach(function(match) {</span></span>
+<span id="cb9-544"><a href="#cb9-544" aria-hidden="true" tabindex="-1"></a><span class="st">          var item = document.createElement('div');</span></span>
+<span id="cb9-545"><a href="#cb9-545" aria-hidden="true" tabindex="-1"></a><span class="st">          item.className = 'memorial-search-result';</span></span>
+<span id="cb9-546"><a href="#cb9-546" aria-hidden="true" tabindex="-1"></a><span class="st">          item.textContent = match.name;</span></span>
+<span id="cb9-547"><a href="#cb9-547" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-548"><a href="#cb9-548" aria-hidden="true" tabindex="-1"></a><span class="st">          item.addEventListener(</span></span>
+<span id="cb9-549"><a href="#cb9-549" aria-hidden="true" tabindex="-1"></a><span class="st">            'click',</span></span>
+<span id="cb9-550"><a href="#cb9-550" aria-hidden="true" tabindex="-1"></a><span class="st">            function() {</span></span>
+<span id="cb9-551"><a href="#cb9-551" aria-hidden="true" tabindex="-1"></a><span class="st">              var layer = match.layer;</span></span>
+<span id="cb9-552"><a href="#cb9-552" aria-hidden="true" tabindex="-1"></a><span class="st">              if (layer.getBounds) {</span></span>
+<span id="cb9-553"><a href="#cb9-553" aria-hidden="true" tabindex="-1"></a><span class="st">                var bounds = layer.getBounds();</span></span>
+<span id="cb9-554"><a href="#cb9-554" aria-hidden="true" tabindex="-1"></a><span class="st">                if (bounds.isValid()) {</span></span>
+<span id="cb9-555"><a href="#cb9-555" aria-hidden="true" tabindex="-1"></a><span class="st">                  map.fitBounds(bounds, {padding: [40, 40]});</span></span>
+<span id="cb9-556"><a href="#cb9-556" aria-hidden="true" tabindex="-1"></a><span class="st">                }</span></span>
+<span id="cb9-557"><a href="#cb9-557" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-558"><a href="#cb9-558" aria-hidden="true" tabindex="-1"></a><span class="st">              } else if (layer.getLatLng) {</span></span>
+<span id="cb9-559"><a href="#cb9-559" aria-hidden="true" tabindex="-1"></a><span class="st">                map.setView(layer.getLatLng(), 17);</span></span>
+<span id="cb9-560"><a href="#cb9-560" aria-hidden="true" tabindex="-1"></a><span class="st">              }</span></span>
+<span id="cb9-561"><a href="#cb9-561" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-562"><a href="#cb9-562" aria-hidden="true" tabindex="-1"></a><span class="st">              if (layer.openPopup) {</span></span>
+<span id="cb9-563"><a href="#cb9-563" aria-hidden="true" tabindex="-1"></a><span class="st">                layer.openPopup();</span></span>
+<span id="cb9-564"><a href="#cb9-564" aria-hidden="true" tabindex="-1"></a><span class="st">              }</span></span>
+<span id="cb9-565"><a href="#cb9-565" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-566"><a href="#cb9-566" aria-hidden="true" tabindex="-1"></a><span class="st">              results.innerHTML = '';</span></span>
+<span id="cb9-567"><a href="#cb9-567" aria-hidden="true" tabindex="-1"></a><span class="st">            }</span></span>
+<span id="cb9-568"><a href="#cb9-568" aria-hidden="true" tabindex="-1"></a><span class="st">          );</span></span>
+<span id="cb9-569"><a href="#cb9-569" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-570"><a href="#cb9-570" aria-hidden="true" tabindex="-1"></a><span class="st">          results.appendChild(item);</span></span>
+<span id="cb9-571"><a href="#cb9-571" aria-hidden="true" tabindex="-1"></a><span class="st">        });</span></span>
+<span id="cb9-572"><a href="#cb9-572" aria-hidden="true" tabindex="-1"></a><span class="st">      });</span></span>
+<span id="cb9-573"><a href="#cb9-573" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-574"><a href="#cb9-574" aria-hidden="true" tabindex="-1"></a><span class="st">      /* =============================================</span></span>
+<span id="cb9-575"><a href="#cb9-575" aria-hidden="true" tabindex="-1"></a><span class="st">         STYLE LEGEND</span></span>
+<span id="cb9-576"><a href="#cb9-576" aria-hidden="true" tabindex="-1"></a><span class="st">         ============================================= */</span></span>
+<span id="cb9-577"><a href="#cb9-577" aria-hidden="true" tabindex="-1"></a><span class="st">      var colors = {</span></span>
+<span id="cb9-578"><a href="#cb9-578" aria-hidden="true" tabindex="-1"></a><span class="st">        'FDNY/EMS': 'red',</span></span>
+<span id="cb9-579"><a href="#cb9-579" aria-hidden="true" tabindex="-1"></a><span class="st">        'Police': 'blue',</span></span>
+<span id="cb9-580"><a href="#cb9-580" aria-hidden="true" tabindex="-1"></a><span class="st">        'First Responder': 'purple',</span></span>
+<span id="cb9-581"><a href="#cb9-581" aria-hidden="true" tabindex="-1"></a><span class="st">        'Volunteer': 'green',</span></span>
+<span id="cb9-582"><a href="#cb9-582" aria-hidden="true" tabindex="-1"></a><span class="st">        'Civilian Casualty': 'white',</span></span>
+<span id="cb9-583"><a href="#cb9-583" aria-hidden="true" tabindex="-1"></a><span class="st">        'Community': 'yellow',</span></span>
+<span id="cb9-584"><a href="#cb9-584" aria-hidden="true" tabindex="-1"></a><span class="st">        'Other Memorial': 'black'</span></span>
+<span id="cb9-585"><a href="#cb9-585" aria-hidden="true" tabindex="-1"></a><span class="st">      };</span></span>
+<span id="cb9-586"><a href="#cb9-586" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-587"><a href="#cb9-587" aria-hidden="true" tabindex="-1"></a><span class="st">      var control = el.querySelector('.leaflet-control-layers');</span></span>
+<span id="cb9-588"><a href="#cb9-588" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-589"><a href="#cb9-589" aria-hidden="true" tabindex="-1"></a><span class="st">      if (control) {</span></span>
+<span id="cb9-590"><a href="#cb9-590" aria-hidden="true" tabindex="-1"></a><span class="st">        var heading = document.createElement('div');</span></span>
+<span id="cb9-591"><a href="#cb9-591" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.innerHTML = 'Filter by memorial type';</span></span>
+<span id="cb9-592"><a href="#cb9-592" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-593"><a href="#cb9-593" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.fontWeight = '600';</span></span>
+<span id="cb9-594"><a href="#cb9-594" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.fontSize = '12px';</span></span>
+<span id="cb9-595"><a href="#cb9-595" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.color = '#eeeeee';</span></span>
+<span id="cb9-596"><a href="#cb9-596" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.marginBottom = '5px';</span></span>
+<span id="cb9-597"><a href="#cb9-597" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.paddingBottom = '5px';</span></span>
+<span id="cb9-598"><a href="#cb9-598" aria-hidden="true" tabindex="-1"></a><span class="st">        heading.style.borderBottom =</span></span>
+<span id="cb9-599"><a href="#cb9-599" aria-hidden="true" tabindex="-1"></a><span class="st">          '1px solid #444';</span></span>
+<span id="cb9-600"><a href="#cb9-600" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-601"><a href="#cb9-601" aria-hidden="true" tabindex="-1"></a><span class="st">        control.insertBefore(heading, control.querySelector('.leaflet-control-layers-list'));</span></span>
+<span id="cb9-602"><a href="#cb9-602" aria-hidden="true" tabindex="-1"></a><span class="st">        var labels = control.querySelectorAll('.leaflet-control-layers-overlays label');</span></span>
+<span id="cb9-603"><a href="#cb9-603" aria-hidden="true" tabindex="-1"></a><span class="st">        labels.forEach(function(label) {</span></span>
+<span id="cb9-604"><a href="#cb9-604" aria-hidden="true" tabindex="-1"></a><span class="st">          var text = label.textContent.trim();</span></span>
+<span id="cb9-605"><a href="#cb9-605" aria-hidden="true" tabindex="-1"></a><span class="st">          var color = colors[text];</span></span>
+<span id="cb9-606"><a href="#cb9-606" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-607"><a href="#cb9-607" aria-hidden="true" tabindex="-1"></a><span class="st">          if (!color) return;</span></span>
 <span id="cb9-608"><a href="#cb9-608" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-609"><a href="#cb9-609" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.width = '10px';</span></span>
-<span id="cb9-610"><a href="#cb9-610" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.height = '10px';</span></span>
-<span id="cb9-611"><a href="#cb9-611" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.borderRadius = '50%';</span></span>
-<span id="cb9-612"><a href="#cb9-612" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.border = '1px solid white';</span></span>
-<span id="cb9-613"><a href="#cb9-613" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.backgroundColor = color;</span></span>
-<span id="cb9-614"><a href="#cb9-614" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.marginLeft = '5px';</span></span>
-<span id="cb9-615"><a href="#cb9-615" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.marginRight = '5px';</span></span>
-<span id="cb9-616"><a href="#cb9-616" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.verticalAlign = 'middle';</span></span>
-<span id="cb9-617"><a href="#cb9-617" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-618"><a href="#cb9-618" aria-hidden="true" tabindex="-1"></a><span class="st">          var checkbox = label.querySelector('input');</span></span>
-<span id="cb9-619"><a href="#cb9-619" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-620"><a href="#cb9-620" aria-hidden="true" tabindex="-1"></a><span class="st">          if (checkbox) {</span></span>
-<span id="cb9-621"><a href="#cb9-621" aria-hidden="true" tabindex="-1"></a><span class="st">            checkbox.insertAdjacentElement('afterend', dot);</span></span>
-<span id="cb9-622"><a href="#cb9-622" aria-hidden="true" tabindex="-1"></a><span class="st">          }</span></span>
-<span id="cb9-623"><a href="#cb9-623" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-624"><a href="#cb9-624" aria-hidden="true" tabindex="-1"></a><span class="st">        });</span></span>
-<span id="cb9-625"><a href="#cb9-625" aria-hidden="true" tabindex="-1"></a><span class="st">      }</span></span>
-<span id="cb9-626"><a href="#cb9-626" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
-<span id="cb9-627"><a href="#cb9-627" aria-hidden="true" tabindex="-1"></a><span class="st">  "</span>)</span>
-<span id="cb9-628"><a href="#cb9-628" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-629"><a href="#cb9-629" aria-hidden="true" tabindex="-1"></a><span class="co"># Save map</span></span>
-<span id="cb9-630"><a href="#cb9-630" aria-hidden="true" tabindex="-1"></a>htmlwidgets<span class="sc">::</span><span class="fu">saveWidget</span>(map, <span class="st">"../map.html"</span>, <span class="at">selfcontained =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb9-609"><a href="#cb9-609" aria-hidden="true" tabindex="-1"></a><span class="st">          var dot = document.createElement('span');</span></span>
+<span id="cb9-610"><a href="#cb9-610" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.display = 'inline-block';</span></span>
+<span id="cb9-611"><a href="#cb9-611" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-612"><a href="#cb9-612" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.width = '10px';</span></span>
+<span id="cb9-613"><a href="#cb9-613" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.height = '10px';</span></span>
+<span id="cb9-614"><a href="#cb9-614" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.borderRadius = '50%';</span></span>
+<span id="cb9-615"><a href="#cb9-615" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.border = '1px solid white';</span></span>
+<span id="cb9-616"><a href="#cb9-616" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.backgroundColor = color;</span></span>
+<span id="cb9-617"><a href="#cb9-617" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.marginLeft = '5px';</span></span>
+<span id="cb9-618"><a href="#cb9-618" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.marginRight = '5px';</span></span>
+<span id="cb9-619"><a href="#cb9-619" aria-hidden="true" tabindex="-1"></a><span class="st">          dot.style.verticalAlign = 'middle';</span></span>
+<span id="cb9-620"><a href="#cb9-620" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-621"><a href="#cb9-621" aria-hidden="true" tabindex="-1"></a><span class="st">          var checkbox = label.querySelector('input');</span></span>
+<span id="cb9-622"><a href="#cb9-622" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-623"><a href="#cb9-623" aria-hidden="true" tabindex="-1"></a><span class="st">          if (checkbox) {</span></span>
+<span id="cb9-624"><a href="#cb9-624" aria-hidden="true" tabindex="-1"></a><span class="st">            checkbox.insertAdjacentElement('afterend', dot);</span></span>
+<span id="cb9-625"><a href="#cb9-625" aria-hidden="true" tabindex="-1"></a><span class="st">          }</span></span>
+<span id="cb9-626"><a href="#cb9-626" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-627"><a href="#cb9-627" aria-hidden="true" tabindex="-1"></a><span class="st">        });</span></span>
+<span id="cb9-628"><a href="#cb9-628" aria-hidden="true" tabindex="-1"></a><span class="st">      }</span></span>
+<span id="cb9-629"><a href="#cb9-629" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb9-630"><a href="#cb9-630" aria-hidden="true" tabindex="-1"></a><span class="st">  "</span>)</span>
+<span id="cb9-631"><a href="#cb9-631" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-632"><a href="#cb9-632" aria-hidden="true" tabindex="-1"></a><span class="co"># Save map</span></span>
+<span id="cb9-633"><a href="#cb9-633" aria-hidden="true" tabindex="-1"></a>htmlwidgets<span class="sc">::</span><span class="fu">saveWidget</span>(map, <span class="st">"../map.html"</span>, <span class="at">selfcontained =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 

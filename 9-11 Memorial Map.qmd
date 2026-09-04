@@ -10,6 +10,14 @@ format:
     css: docs/styles.css
 ---
 
+## About the map
+
+To commemorate the 25th anniversary of 9/11, the NYC Council Data Team has compiled a map of memorials and street co-namings honoring those lost to the attacks. Memorials were scraped from [Voices Center for Resilience](https://www.voicescenter.org) and filtered to include those with documented locations in NYC. Street co-namings were sourced from the [NYC Honorary Street Names Map](https://streetnamesmap-nyc.hub.arcgis.com/) and filtered to include those with relevant mentions of 9/11 and related terms in the name or biographical information. 
+
+If biographical information was not available through the Honorary Street Names Map, it was sourced from [this index of honorary street names](http://www.nycstreets.info) or an online obituary cited in the popup. The City Council Member listed in the "Council Member" field is the person who represented the district containing the co-named street at the time the co-naming was adopted. 
+
+The Data Team categorized the objects on the map according to the people they commemorate. FDNY/EMS represents members of the Fire Department, Police represents NYPD and all other police officers, First Responder represents all other responders in the line of duty, Volunteer represents civilian responders, Civilian Casualty represents civilians targeted by the attacks, Community represents affinity groups affected by the attacks, and Other Memorial represents places that broadly commemorate 9/11.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -29,7 +37,7 @@ knitr::opts_chunk$set(
   </div>
 
   <div class="plot-column">
-    <iframe src="docs/p_land_use.html"></iframe>
+    <iframe src="docs/p_memorial_form.html"></iframe>
   </div>
 </div>
 ```
@@ -54,13 +62,7 @@ window.addEventListener('resize', () => {
 </script>
 ```
 
-## About the map
-
-To commemorate the 25th anniversary of 9/11, the NYC Council Data Team has compiled a map of memorials and street co-namings honoring those lost to the attacks. Memorials were scraped from [Voices Center for Resilience](https://www.voicescenter.org) and filtered to include those with documented locations in NYC. Street co-namings were sourced from the [NYC Honorary Street Names Map](https://streetnamesmap-nyc.hub.arcgis.com/) and filtered to include those with relevant mentions of 9/11 and related terms in the name or biographical information. 
-
-If biographical information was not available through the Honorary Street Names Map, it was sourced from [this index of honorary street names](http://www.nycstreets.info) or an online obituary cited in the popup. The City Council Member listed in the "Council Member" field is the person who represented the district containing the co-named street at the time the co-naming was adopted. 
-
-The Data Team categorized the objects on the map according to the people they commemorate. FDNY/EMS represents members of the Fire Department, Police represents NYPD and all other police officers, First Responder represents all other responders in the line of duty, Volunteer represents civilian responders, Civilian Casualty represents civilians targeted by the attacks, Community represents affinity groups affected by the attacks, and Other Memorial represents places that broadly commemorate 9/11.
+9/11-related street co-namings were most frequent in the 5 years following the attacks, but there has been a notable uptick since 2022. More recent co-namings often memorialize those who died of 9/11-related illness. Most honorees are FDNY/EMS or civilian casualties, with many memorials honoring police as well. Most memorials on the map are intersection/street co-namings, with greenspaces accounting for a plurality of the other memorials. The map's most unique forms of memorial include places of worship, memorial events, and bar/restaurants.
 
 The objects shown on the map are not an exhaustive collection of 9/11 commemorations across NYC and were last updated in September of 2026. If you would like a location to be added to the map, reach out to [datainfo@council.nyc.gov](mailto:datainfo@council.nyc.gov). To request a new street co-naming, you can contact the relevant [community board](https://www.nyc.gov/site/communityboards/index.page).
 

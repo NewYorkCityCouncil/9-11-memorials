@@ -240,35 +240,46 @@ p_year <- ggplotly(p_year, tooltip = "text") %>%
 
 p_year
 
-# 2. Who is honored?
+# 2. Honorees
 type_counts <- table(total_edits$type, useNA = "no") |>
   as.data.frame() |>
   rename(type = Var1, n = Freq) |>
   arrange(desc(n)) |>
-  mutate(type = factor(type, levels = type))
+  mutate(
+    type = factor(type, levels = type),
+    pct = n / sum(n)
+  )
 
 type_colors <- c(
-  "FDNY/EMS"            = "red",
-  "Police"              = "blue",
-  "First Responder"    = "purple",
-  "Volunteer"          = "green",
+  "FDNY/EMS"          = "red",
+  "Police"            = "blue",
+  "First Responder"   = "purple",
+  "Volunteer"         = "green",
   "Civilian Casualty" = "white",
   "Community"         = "yellow",
-  "Other Memorial" = "gray"
+  "Other Memorial"    = "gray"
 )
 
-# Add gray for any unexpected type
-missing_colors <- setdiff(type_counts$type, names(type_colors))
-
-if (length(missing_colors) > 0) {
-  type_colors[missing_colors] <- "black"
-}
+# Create labels for the legend
+type_labels <- setNames(
+  paste0(type_counts$type, " (", round(type_counts$pct * 100), "%)"),
+  type_counts$type
+)
 
 p_type <- ggplot(type_counts, aes(fill = type, values = n)) +
-  geom_waffle(n_rows = 12, size = 0.25, colour = "#222222", flip = FALSE) +
-  scale_fill_manual(values = type_colors, breaks = levels(type_counts$type)) +
+  geom_waffle(
+    n_rows = 12,
+    size = 0.25,
+    colour = "#222222",
+    flip = FALSE
+  ) +
+  scale_fill_manual(
+    values = type_colors,
+    breaks = levels(type_counts$type),
+    labels = type_labels
+  ) +
   coord_equal() +
-  labs(title = "Who is honored?", fill = NULL) +
+  labs(title = "Honorees", fill = NULL) +
   theme_911() +
   theme(
     axis.text = element_blank(),
@@ -277,35 +288,36 @@ p_type <- ggplot(type_counts, aes(fill = type, values = n)) +
     axis.line = element_blank(),
     panel.grid = element_blank(),
     plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom",
+    legend.position = "bottom"
   ) +
   guides(fill = guide_legend(nrow = 4, byrow = TRUE))
 
-# 3. How were they honored?
-land_use_counts <- total_edits %>%
-  filter(!is.na(land_use)) %>%
-  count(land_use, sort = TRUE) %>%
-  mutate(land_use = reorder(land_use, n))
+# 3. Forms of Memorials
+memorial_form_counts <- total_edits %>%
+  filter(!is.na(memorial_form)) %>%
+  count(memorial_form, sort = TRUE) %>%
+  mutate(memorial_form = reorder(memorial_form, n))
 
-p_land_use <- ggplot(land_use_counts, aes(x = n, y = land_use,
-  text = paste0("<b>", land_use, "</b><br>", n, " memorials"))) +
+p_memorial_form <- ggplot(memorial_form_counts, aes(x = n, y = memorial_form,
+  text = paste0("<b>", memorial_form, "</b><br>", n, " memorials",
+                " (", round(n / sum(n) * 100, 1), "%)"))) +
   geom_col(fill = "white", width = 0.7) +
   scale_x_continuous(breaks = pretty_breaks(n = 6), expand = expansion(mult = c(0, 0.08))) +
-  labs(title = "How were they honored?", x = "Number of memorials", y = NULL) +
+  labs(title = "Forms of Memorials", x = "Number of memorials", y = NULL) +
   theme_911()
 
-p_land_use <- ggplotly(p_land_use, tooltip = "text") %>%
+p_memorial_form <- ggplotly(p_memorial_form, tooltip = "text") %>%
   layout(
-    title = list(text = "How were they honored?", x = 0.5, xanchor = "center", font = list(size = 16, color = "white")),
+    title = list(text = "Forms of Memorials", x = 0.5, xanchor = "center", font = list(size = 16, color = "white")),
     margin = list(t = 60, r = 30, b = 50, l = 50)) %>%
   config(responsive = TRUE)
 
-p_land_use
+p_memorial_form
 
 # Save widgets
 saveWidget(p_year, "../docs/p_year.html", selfcontained = TRUE)
 ggsave("../docs/p_type.png", plot = p_type, width = 4.5, height = 4.5, dpi = 300, bg = "#222222")
-saveWidget(p_land_use, "../docs/p_land_use.html", selfcontained = TRUE)
+saveWidget(p_memorial_form, "../docs/p_memorial_form.html", selfcontained = TRUE)
 ```
 
 

@@ -151,6 +151,11 @@ background-size: cover;
 
 
 
+<section id="about-the-map" class="level2">
+<h2 class="anchored" data-anchor-id="about-the-map">About the map</h2>
+<p>To commemorate the 25th anniversary of 9/11, the NYC Council Data Team has compiled a map of memorials and street co-namings honoring those lost to the attacks. Memorials were scraped from <a href="https://www.voicescenter.org">Voices Center for Resilience</a> and filtered to include those with documented locations in NYC. Street co-namings were sourced from the <a href="https://streetnamesmap-nyc.hub.arcgis.com/">NYC Honorary Street Names Map</a> and filtered to include those with relevant mentions of 9/11 and related terms in the name or biographical information.</p>
+<p>If biographical information was not available through the Honorary Street Names Map, it was sourced from <a href="http://www.nycstreets.info">this index of honorary street names</a> or an online obituary cited in the popup. The City Council Member listed in the “Council Member” field is the person who represented the district containing the co-named street at the time the co-naming was adopted.</p>
+<p>The Data Team categorized the objects on the map according to the people they commemorate. FDNY/EMS represents members of the Fire Department, Police represents NYPD and all other police officers, First Responder represents all other responders in the line of duty, Volunteer represents civilian responders, Civilian Casualty represents civilians targeted by the attacks, Community represents affinity groups affected by the attacks, and Other Memorial represents places that broadly commemorate 9/11.</p>
 <div class="plot-row">
   <div class="plot-column">
     <iframe src="docs/p_year.html"></iframe>
@@ -161,7 +166,7 @@ background-size: cover;
   </div>
 
   <div class="plot-column">
-    <iframe src="docs/p_land_use.html"></iframe>
+    <iframe src="docs/p_memorial_form.html"></iframe>
   </div>
 </div>
 <script>
@@ -181,11 +186,7 @@ window.addEventListener('resize', () => {
   resizeTimeout = setTimeout(resizeAllPlotFrames, 150);
 });
 </script>
-<section id="about-the-map" class="level2">
-<h2 class="anchored" data-anchor-id="about-the-map">About the map</h2>
-<p>To commemorate the 25th anniversary of 9/11, the NYC Council Data Team has compiled a map of memorials and street co-namings honoring those lost to the attacks. Memorials were scraped from <a href="https://www.voicescenter.org">Voices Center for Resilience</a> and filtered to include those with documented locations in NYC. Street co-namings were sourced from the <a href="https://streetnamesmap-nyc.hub.arcgis.com/">NYC Honorary Street Names Map</a> and filtered to include those with relevant mentions of 9/11 and related terms in the name or biographical information.</p>
-<p>If biographical information was not available through the Honorary Street Names Map, it was sourced from <a href="http://www.nycstreets.info">this index of honorary street names</a> or an online obituary cited in the popup. The City Council Member listed in the “Council Member” field is the person who represented the district containing the co-named street at the time the co-naming was adopted.</p>
-<p>The Data Team categorized the objects on the map according to the people they commemorate. FDNY/EMS represents members of the Fire Department, Police represents NYPD and all other police officers, First Responder represents all other responders in the line of duty, Volunteer represents civilian responders, Civilian Casualty represents civilians targeted by the attacks, Community represents affinity groups affected by the attacks, and Other Memorial represents places that broadly commemorate 9/11.</p>
+<p>9/11-related street co-namings were most frequent in the 5 years following the attacks, but there has been a notable uptick since 2022. More recent co-namings often memorialize those who died of 9/11-related illness. Most honorees are FDNY/EMS or civilian casualties, with many memorials honoring police as well. Most memorials on the map are intersection/street co-namings, with green spaces accounting for a plurality of the other memorials. The map’s most unique forms of memorial include places of worship, memorial events, and bar/restaurants.</p>
 <p>The objects shown on the map are not an exhaustive collection of 9/11 commemorations across NYC and were last updated in September of 2026. If you would like a location to be added to the map, reach out to <a href="mailto:datainfo@council.nyc.gov">datainfo@council.nyc.gov</a>. To request a new street co-naming, you can contact the relevant <a href="https://www.nyc.gov/site/communityboards/index.page">community board</a>.</p>
 <div class="iframe-container">
   <button class="fullscreen-button" onclick="toggleFullscreen(this)">

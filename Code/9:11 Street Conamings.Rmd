@@ -16,6 +16,9 @@ library(htmltools)
 library(htmlwidgets)
 library(readxl)
 library(writexl)
+library(scales)
+library(waffle)
+library(plotly)
 ```
 
 # Acquire complete data from the arcgis map
@@ -158,6 +161,7 @@ total <- total %>%
     new_name = case_when(
       new_name == "Memorial Treeway of Champion Trees: Calvary Cemetary" ~ "Memorial Treeway of Champion Trees: Calvary Cemetery",
       new_name == "Conseleya 9/11 Memorial" ~ "Conselyea 9/11 Memorial",
+      new_name == "Fort Greene Park Groove of Trees" ~ "Fort Greene Park Grove of Trees",
       new_name == "Forest Park Memorial Drive" & introduced_by_council_members == "Holden" ~ "Forest Park Memorial Drive (Outside Park)",
       new_name == "Forest Park Memorial Drive" & introduced_by_council_members == "Crowley " ~ "Forest Park Memorial Drive (Inside Park)",
       new_name == "Giuseppa Vendome Way" & limits == "At the intersection of 24th Avenue and Crescent Street" ~ "Giuseppa Vendome Way (Crescent St)",
@@ -185,6 +189,123 @@ total_edits$limits[total_edits$new_name == "Plaza of Heroes"] <- "The intersecti
 
 # Pretty variable names
 pretty_name <- function(x) {x |> str_replace_all("_", " ") |> str_to_title()}
+```
+
+# Create data viz for the website
+```{r}
+# Dark-mode theme shared by all three visualizations
+theme_911 <- function() {
+  theme_minimal(base_size = 13) +
+    theme(
+      plot.background  = element_rect(fill = "#222222", color = NA),
+      panel.background = element_rect(fill = "#222222", color = NA),
+      legend.background = element_rect(fill = "#222222", color = NA),
+      legend.key        = element_rect(fill = "#222222", color = NA),
+
+      plot.title = element_text(color = "white", size = 18, face = "bold", hjust = 0),
+
+      axis.title = element_text(color = "white"),
+      axis.text  = element_text(color = "white"),
+      axis.line  = element_line(color = "white"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+
+      legend.text = element_text(color = "white"),
+      legend.title = element_text(color = "white", face = "bold"))}
+
+# 1. 9/11 Street Co-Namings Over Time
+co_namings_year <- table(total_edits$enactment_year, useNA = "no") |>
+  as.data.frame() |>
+  rename(enactment_year = Var1, n = Freq) |>
+  arrange(enactment_year)
+
+p_year <- ggplot(co_namings_year, aes(x = enactment_year, y = n, group=1, 
+  text = paste0("<b>", enactment_year, "</b>", "<br>", n, " co-namings"))) +
+  geom_line(color="white", linewidth = 1.2) +
+  geom_point(color="white", size = 3) +
+  labs(title = "9/11 Street Co-Namings Over Time", x = "Year", y = "Number of co-namings") +
+  scale_x_discrete(
+    breaks = levels(co_namings_year$enactment_year)[
+      as.numeric(levels(co_namings_year$enactment_year)) %% 4 == 0
+    ]
+  ) +
+  theme_911()
+
+p_year <- ggplotly(p_year, tooltip = "text") %>%
+  layout(
+    title = list(text = "9/11 Street Co-Namings Over Time", x = 0.5, xanchor = "center", font = list(size = 16, color = "white")),
+    margin = list(t = 60, r = 30, b = 50, l = 50),
+    hoverlabel = list(bgcolor = "#222222", bordercolor = "white", font = list(color = "white"))) %>%
+  config(responsive = TRUE)
+
+p_year
+
+# 2. Who is honored?
+type_counts <- table(total_edits$type, useNA = "no") |>
+  as.data.frame() |>
+  rename(type = Var1, n = Freq) |>
+  arrange(desc(n)) |>
+  mutate(type = factor(type, levels = type))
+
+type_colors <- c(
+  "FDNY/EMS"            = "red",
+  "Police"              = "blue",
+  "First Responder"    = "purple",
+  "Volunteer"          = "green",
+  "Civilian Casualty" = "white",
+  "Community"         = "yellow",
+  "Other Memorial" = "gray"
+)
+
+# Add gray for any unexpected type
+missing_colors <- setdiff(type_counts$type, names(type_colors))
+
+if (length(missing_colors) > 0) {
+  type_colors[missing_colors] <- "black"
+}
+
+p_type <- ggplot(type_counts, aes(fill = type, values = n)) +
+  geom_waffle(n_rows = 12, size = 0.25, colour = "#222222", flip = FALSE) +
+  scale_fill_manual(values = type_colors, breaks = levels(type_counts$type)) +
+  coord_equal() +
+  labs(title = "Who is honored?", fill = NULL) +
+  theme_911() +
+  theme(
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    panel.grid = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom",
+  ) +
+  guides(fill = guide_legend(nrow = 4, byrow = TRUE))
+
+# 3. How were they honored?
+land_use_counts <- total_edits %>%
+  filter(!is.na(land_use)) %>%
+  count(land_use, sort = TRUE) %>%
+  mutate(land_use = reorder(land_use, n))
+
+p_land_use <- ggplot(land_use_counts, aes(x = n, y = land_use,
+  text = paste0("<b>", land_use, "</b><br>", n, " memorials"))) +
+  geom_col(fill = "white", width = 0.7) +
+  scale_x_continuous(breaks = pretty_breaks(n = 6), expand = expansion(mult = c(0, 0.08))) +
+  labs(title = "How were they honored?", x = "Number of memorials", y = NULL) +
+  theme_911()
+
+p_land_use <- ggplotly(p_land_use, tooltip = "text") %>%
+  layout(
+    title = list(text = "How were they honored?", x = 0.5, xanchor = "center", font = list(size = 16, color = "white")),
+    margin = list(t = 60, r = 30, b = 50, l = 50)) %>%
+  config(responsive = TRUE)
+
+p_land_use
+
+# Save widgets
+saveWidget(p_year, "../docs/p_year.html", selfcontained = TRUE)
+ggsave("../docs/p_type.png", plot = p_type, width = 4.5, height = 4.5, dpi = 300, bg = "#222222")
+saveWidget(p_land_use, "../docs/p_land_use.html", selfcontained = TRUE)
 ```
 
 

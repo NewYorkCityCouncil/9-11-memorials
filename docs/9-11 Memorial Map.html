@@ -151,6 +151,36 @@ background-size: cover;
 
 
 
+<div class="plot-row">
+  <div class="plot-column">
+    <iframe src="docs/p_year.html"></iframe>
+  </div>
+
+  <div class="plot-column">
+    <img src="docs/p_type.png" class="static-plot" alt="Memorials by type">
+  </div>
+
+  <div class="plot-column">
+    <iframe src="docs/p_land_use.html"></iframe>
+  </div>
+</div>
+<script>
+function resizeAllPlotFrames() {
+  document.querySelectorAll('.plot-column iframe').forEach(f => {
+    if (f.contentWindow) f.contentWindow.dispatchEvent(new Event('resize'));
+  });
+}
+
+document.querySelectorAll('.plot-column iframe').forEach(f => {
+  f.addEventListener('load', () => setTimeout(resizeAllPlotFrames, 50));
+});
+
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(resizeAllPlotFrames, 150);
+});
+</script>
 <section id="about-the-map" class="level2">
 <h2 class="anchored" data-anchor-id="about-the-map">About the map</h2>
 <p>To commemorate the 25th anniversary of 9/11, the NYC Council Data Team has compiled a map of memorials and street co-namings honoring those lost to the attacks. Memorials were scraped from <a href="https://www.voicescenter.org">Voices Center for Resilience</a> and filtered to include those with documented locations in NYC. Street co-namings were sourced from the <a href="https://streetnamesmap-nyc.hub.arcgis.com/">NYC Honorary Street Names Map</a> and filtered to include those with relevant mentions of 9/11 and related terms in the name or biographical information.</p>

@@ -14,7 +14,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Remove horizontal rules beneath section headers */ 
 h1, h2, h3, h4, h5, h6 { 
-  border: none !important; border-bottom: none !important; 
+  border: none !important;
 }
 
 /* =========================
@@ -88,11 +88,29 @@ margin-bottom: 1rem;
   Navbar
 ========================= */
   
-  .navbar-brand img {
-    background-color: rgba(255, 255, 255, 0.92);
-    border-radius: 5px;
-    padding: 4px 6px;
+.navbar {
+  background-color: #222222 !important;
+  border: none !important;
+  box-shadow: none !important;
+}  
+  
+.navbar-brand img {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-radius: 5px;
+  padding: 4px 6px;
+}
+
+@media (max-width: 1092px) {
+  .navbar-expand-lg .navbar-nav {
+    display: none !important;
   }
+  .navbar-expand-lg .navbar-toggler {
+    display: block !important;
+  }
+  .navbar-expand-lg .navbar-collapse {
+    display: none !important;
+  }
+}
 
 
 /* =========================
@@ -103,17 +121,31 @@ margin-bottom: 1rem;
     display: none !important;
   }
 
-
 /* =========================
-  Leaflet Widgets
+  Plots
 ========================= */
-  
-  .leaflet-container {
-    max-width: 672px;
-    margin-left: 0;
-    margin-right: auto;
-  }
+.plot-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 20px;
+  width: 100%;
+  margin: 0 0 30px 0;
+}
 
+.plot-column {
+  min-width: 0;
+  aspect-ratio: 0.92 / 1;   /* roughly matches your old 386px : 420px columns — tune to taste */
+}
+
+.plot-column iframe,
+.plot-column .static-plot {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: #222222;
+  object-fit: contain;
+}
 
 /* =========================
   Fullscreen iframe
@@ -145,30 +177,4 @@ margin-bottom: 1rem;
 
 .fullscreen-button:hover {
   background: rgba(18, 21, 22, 1);
-}
-
-
-/* =========================
-  Footnotes / citations
-========================= */
-  
-  a.footnote-ref,
-a[href^="#fn"] {
-  text-decoration: none;
-  font-size: 0.8em;
-  vertical-align: super;
-}
-
-.footnote-hover {
-  cursor: help;
-  color: #2c5aa0;
-}
-
-section.footnotes {
-  display: none;
-}
-
-section.footnotes,
-#quarto-appendix {
-display: none;
 }

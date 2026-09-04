@@ -88,11 +88,17 @@ margin-bottom: 1rem;
   Navbar
 ========================= */
   
-  .navbar-brand img {
-    background-color: rgba(255, 255, 255, 0.92);
-    border-radius: 5px;
-    padding: 4px 6px;
-  }
+.navbar {
+  background-color: #222222 !important;
+  border: none !important;
+  box-shadow: none !important;
+}  
+  
+.navbar-brand img {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-radius: 5px;
+  padding: 4px 6px;
+}
 
 
 /* =========================

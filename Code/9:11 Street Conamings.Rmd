@@ -147,13 +147,41 @@ scraped <- scraped %>%
   filter(!is.na(longitude)) # Drop obs without coords (these wouldn't be mapped anyway)
 scraped_sf <- st_as_sf(scraped, coords = c("longitude", "latitude"), crs = 4326)
 total <- bind_rows(final, scraped_sf) %>% unique()
-write_xlsx(total, path = "../data/total.xlsx")
+write_xlsx(sf::st_drop_geometry(total), path = "../data/total.xlsx")
 ```
 
 # Clean and merge coded data
 ```{r}
 # Read in coded data, having removed dupes, corrected typos, selected the most relevant CM, and categorized memorials
 total_edits <- read_xlsx("../data/total_edits.xlsx")
+
+# Properly format geometries for new co-namings
+has_geom <- !is.na(total_edits$geometry) & total_edits$geometry != ""
+total_edits$geom_point <- st_sfc(rep(list(st_point()), nrow(total_edits)), crs = 4326) # empty placeholder
+total_edits$geom_point[has_geom] <- st_as_sfc(total_edits$geometry[has_geom], crs = 4326)
+
+make_linestring <- function(start_wkt, end_wkt) {
+  if (is.na(start_wkt) || is.na(end_wkt)) return(st_linestring())
+  start_pt <- st_point(as.numeric(str_extract_all(start_wkt, "-?\\d+\\.?\\d*")[[1]]))
+  end_pt   <- st_point(as.numeric(str_extract_all(end_wkt, "-?\\d+\\.?\\d*")[[1]]))
+  st_linestring(rbind(start_pt, end_pt))
+}
+
+total_edits$geom_line <- st_sfc(map2(total_edits$start, total_edits$end, make_linestring), crs = 4326)
+
+combined_list <- vector("list", nrow(total_edits))
+
+for (i in seq_len(nrow(total_edits))) {
+  if (!st_is_empty(total_edits$geom_line[[i]])) {
+    combined_list[[i]] <- total_edits$geom_line[[i]]
+  } else {
+    combined_list[[i]] <- total_edits$geom_point[[i]]
+  }
+}
+
+total_edits$geometry <- st_sfc(combined_list, crs = 4326)
+total_edits <- total_edits %>%
+  select(-geom_point, -geom_line, -start, -end)
 
 # Dedupe names in total (and fix voicescenter misspellings)
 total <- total %>%
@@ -179,13 +207,23 @@ total <- total %>%
 
 # Merge geometries back in
 total_edits <- total_edits %>%
-  left_join(total %>% select(new_name, geometry), by = "new_name") %>%
+  left_join(total %>% 
+              st_drop_geometry() %>%
+              mutate(geometry_new = st_geometry(total)) %>%
+              select(new_name, geometry_new), by = "new_name") %>%
+  mutate(geometry=st_sfc(
+    map2(geometry, geometry_new, ~ if (st_is_empty(.x)) .y else .x),
+    crs = st_crs(total_edits))) %>%
+  select(-geometry_new) %>%
   st_as_sf()
 
 # Correct Plaza of Heroes (per Brad)
 total_edits$geometry[total_edits$new_name == "Plaza of Heroes"] <- 
   st_sfc(st_point(c(-73.8965081574393, 40.72597950418192)), crs = st_crs(total_edits))
 total_edits$limits[total_edits$new_name == "Plaza of Heroes"] <- "The intersection of Borden Avenue and 68th Street"
+
+# Restrict to official co-namings (per Brad, dropping here instead of reversing earlier merge in case we want these back someday)
+total_edits <- total_edits %>% filter(memorial_form %in% c("Intersection", "Street") & !is.na(enactment_year))
 
 # Pretty variable names
 pretty_name <- function(x) {x |> str_replace_all("_", " ") |> str_to_title()}
@@ -240,7 +278,7 @@ p_year <- ggplotly(p_year, tooltip = "text") %>%
 
 p_year
 
-# 2. Honorees
+# 2. 9/11 Street Co-Naming Honorees
 type_counts <- table(total_edits$type, useNA = "no") |>
   as.data.frame() |>
   rename(type = Var1, n = Freq) |>
@@ -268,7 +306,7 @@ type_labels <- setNames(
 
 p_type <- ggplot(type_counts, aes(fill = type, values = n)) +
   geom_waffle(
-    n_rows = 12,
+    n_rows = 8,
     size = 0.25,
     colour = "#222222",
     flip = FALSE
@@ -279,7 +317,7 @@ p_type <- ggplot(type_counts, aes(fill = type, values = n)) +
     labels = type_labels
   ) +
   coord_equal() +
-  labs(title = "Honorees", fill = NULL) +
+  labs(title = "9/11 Street Co-Naming Honorees", fill = NULL) +
   theme_911() +
   theme(
     axis.text = element_blank(),
@@ -292,32 +330,32 @@ p_type <- ggplot(type_counts, aes(fill = type, values = n)) +
   ) +
   guides(fill = guide_legend(nrow = 4, byrow = TRUE))
 
-# 3. Forms of Memorials
-memorial_form_counts <- total_edits %>%
-  filter(!is.na(memorial_form)) %>%
-  count(memorial_form, sort = TRUE) %>%
-  mutate(memorial_form = reorder(memorial_form, n))
-
-p_memorial_form <- ggplot(memorial_form_counts, aes(x = n, y = memorial_form,
-  text = paste0("<b>", memorial_form, "</b><br>", n, " memorials",
-                " (", round(n / sum(n) * 100, 1), "%)"))) +
-  geom_col(fill = "white", width = 0.7) +
-  scale_x_continuous(breaks = pretty_breaks(n = 6), expand = expansion(mult = c(0, 0.08))) +
-  labs(title = "Forms of Memorials", x = "Number of memorials", y = NULL) +
-  theme_911()
-
-p_memorial_form <- ggplotly(p_memorial_form, tooltip = "text") %>%
-  layout(
-    title = list(text = "Forms of Memorials", x = 0.5, xanchor = "center", font = list(size = 16, color = "white")),
-    margin = list(t = 60, r = 30, b = 50, l = 50)) %>%
-  config(responsive = TRUE)
-
-p_memorial_form
+# # 3. Forms of Memorials (taken out with non-official memorials)
+# memorial_form_counts <- total_edits %>%
+#   filter(!is.na(memorial_form)) %>%
+#   count(memorial_form, sort = TRUE) %>%
+#   mutate(memorial_form = reorder(memorial_form, n))
+# 
+# p_memorial_form <- ggplot(memorial_form_counts, aes(x = n, y = memorial_form,
+#   text = paste0("<b>", memorial_form, "</b><br>", n, " memorials",
+#                 " (", round(n / sum(n) * 100, 1), "%)"))) +
+#   geom_col(fill = "white", width = 0.7) +
+#   scale_x_continuous(breaks = pretty_breaks(n = 6), expand = expansion(mult = c(0, 0.08))) +
+#   labs(title = "Forms of Memorials", x = "Number of memorials", y = NULL) +
+#   theme_911()
+# 
+# p_memorial_form <- ggplotly(p_memorial_form, tooltip = "text") %>%
+#   layout(
+#     title = list(text = "Forms of Memorials", x = 0.5, xanchor = "center", font = list(size = 16, color = "white")),
+#     margin = list(t = 60, r = 30, b = 50, l = 50)) %>%
+#   config(responsive = TRUE)
+# 
+# p_memorial_form
 
 # Save widgets
 saveWidget(p_year, "../docs/p_year.html", selfcontained = TRUE)
 ggsave("../docs/p_type.png", plot = p_type, width = 4.5, height = 4.5, dpi = 300, bg = "#222222")
-saveWidget(p_memorial_form, "../docs/p_memorial_form.html", selfcontained = TRUE)
+# saveWidget(p_memorial_form, "../docs/p_memorial_form.html", selfcontained = TRUE)
 ```
 
 
@@ -325,6 +363,20 @@ saveWidget(p_memorial_form, "../docs/p_memorial_form.html", selfcontained = TRUE
 ```{r}
 # Build popup HTML
 vals <- total_edits |> st_drop_geometry()
+
+# ---- Feedback form config ----
+# Base Google Form viewform URL + the entry tokens from your prefilled link.
+feedback_form_base <- "https://docs.google.com/forms/d/e/1FAIpQLSe_1_rKPV6RcpHJUa3JJjiO7GKUFdvj0aJ7Wn-JVeD87Jyb4g/viewform?usp=pp_url"
+feedback_entry_type <- "entry.1135922219"   # Issue Type
+feedback_entry_name <- "entry.1544430029"   # Memorial name field
+
+# Helper: build a prefilled URL for a given memorial name
+feedback_url <- function(name) {
+  paste0(
+    feedback_form_base,
+    "&", feedback_entry_name, "=", utils::URLencode(name, reserved = TRUE)
+  )
+}
 
 popup_html <- map_chr(seq_len(nrow(vals)), function(i) {
   
@@ -411,6 +463,19 @@ popup_html <- map_chr(seq_len(nrow(vals)), function(i) {
       paste(rows, collapse = ""),
       bio_section,
       
+            # ---- Report an issue link ----
+      sprintf(
+        "<hr style='margin:8px 0 5px 0;'>
+         <div style='font-size:11px; line-height:1.35;'>
+           <a href='%s' target='_blank' rel='noopener'
+              style='color:#9ecbff; text-decoration:underline;'
+              onclick='event.stopPropagation();'>
+             Report an issue with this memorial
+           </a>
+         </div>",
+        htmlEscape(feedback_url(as.character(vals_list$new_name)))
+      ),
+    
     "</div>")
 })
 

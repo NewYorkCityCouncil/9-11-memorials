@@ -28,7 +28,8 @@ We are also passing two Resolutions, both commemorating 9/11 and calling on the 
 If you want to learn some of these stories yourself, please explore the map below and click on individual street co-naming signs.
 
 # Legislation
-![\n](docs/museum.jpg){.resolution-image}
+
+![](docs/museum.jpg){.resolution-image fig-alt="Speaker Julie Menin making a funding announcement at the 9/11 Memorial Museum."}
 
 [Res 0006-2026:](https://legistar.council.nyc.gov/LegislationDetail.aspx?ID=7861347&GUID=3BE44CB0-F375-4872-B663-99B534885B0B) Resolution commemorating the 25th anniversary of the September 11 attacks.
 
@@ -98,7 +99,7 @@ This year's package of 9/11-related street co-namings is the largest in the city
 
 The objects shown on the map are not an exhaustive collection of 9/11 commemorations across NYC. If you would like to request a 9/11 related street co-naming, you can contact your local [Council Member](https://council.nyc.gov/districts/) or [Community Board](https://www.nyc.gov/site/communityboards/index.page).
 
-![\n](docs/flower.jpg){.resolution-image}
+![](docs/flower.jpg){.resolution-image fig-alt="A white rose placed within a name's inscription at the North Tower Pool, Ground Zero."}
 
 
 

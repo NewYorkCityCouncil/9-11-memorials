@@ -11,6 +11,7 @@ website:
     background: dark
     logo: docs/full-council-logo.png
     logo-alt: "New York City Council Logo"
+    logo-href: "https://council.nyc.gov/9-11-street-co-namings/"
     title: false
     left:
       - text: "FIND MY DISTRICT"
